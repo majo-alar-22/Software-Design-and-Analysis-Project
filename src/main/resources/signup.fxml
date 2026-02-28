@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/23"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="app.SignupController"
+            styleClass="root">
+
+    <top>
+        <VBox spacing="10" styleClass="header" BorderPane.alignment="CENTER">
+            <padding><Insets top="22" right="22" bottom="16" left="22"/></padding>
+
+            <HBox spacing="12" alignment="CENTER_LEFT">
+                <Label text="⚽" styleClass="logo"/>
+                <VBox spacing="4">
+                    <Label text="JOIN THE LEAGUE" styleClass="title"/>
+                    <Label text="Create your account to create or join an intramural soccer team."
+                           styleClass="subtitle"/>
+                </VBox>
+            </HBox>
+
+            <HBox spacing="10" styleClass="badges">
+                <Label text="● Teams" styleClass="badge green"/>
+                <Label text="● Scheduling" styleClass="badge blue"/>
+                <Label text="● Results" styleClass="badge purple"/>
+            </HBox>
+        </VBox>
+    </top>
+
+    <center>
+        <VBox spacing="14" styleClass="card" BorderPane.alignment="TOP_CENTER">
+            <padding><Insets top="18" right="22" bottom="22" left="22"/></padding>
+
+            <Label fx:id="statusLabel" text="" styleClass="status" visible="false" managed="false"/>
+
+            <VBox spacing="10">
+                <Label text="Full Name" styleClass="fieldLabel"/>
+                <HBox fx:id="nameRow" spacing="10" styleClass="fieldRow">
+                    <Label text="👤" styleClass="icon"/>
+                    <TextField fx:id="nameField" promptText="e.g., Afnan Siddiqui" HBox.hgrow="ALWAYS"/>
+                </HBox>
+            </VBox>
+
+            <VBox spacing="10">
+                <Label text="Email" styleClass="fieldLabel"/>
+                <HBox fx:id="emailRow" spacing="10" styleClass="fieldRow">
+                    <Label text="✉️" styleClass="icon"/>
+                    <TextField fx:id="emailField" promptText="you@example.com" HBox.hgrow="ALWAYS"/>
+                </HBox>
+            </VBox>
+
+            <VBox spacing="10">
+                <Label text="Password" styleClass="fieldLabel"/>
+                <HBox fx:id="passRow" spacing="10" styleClass="fieldRow">
+                    <Label text="🔒" styleClass="icon"/>
+                    <PasswordField fx:id="passwordField" promptText="Minimum 8 characters" HBox.hgrow="ALWAYS"/>
+                </HBox>
+                <Label text="Tip: Use at least 8 characters." styleClass="hint"/>
+            </VBox>
+
+            <VBox spacing="10">
+                <Label text="Confirm Password" styleClass="fieldLabel"/>
+                <HBox fx:id="confirmRow" spacing="10" styleClass="fieldRow">
+                    <Label text="✅" styleClass="icon"/>
+                    <PasswordField fx:id="confirmPasswordField" promptText="Re-enter password" HBox.hgrow="ALWAYS"/>
+                </HBox>
+            </VBox>
+
+            <Button fx:id="createAccountBtn"
+                    text="CREATE ACCOUNT"
+                    onAction="#onCreateAccount"
+                    styleClass="cta"
+                    maxWidth="Infinity"/>
+
+            <Hyperlink text="Already have an account? Log in"
+                       onAction="#onGoLogin"
+                       styleClass="footer"/>
+        </VBox>
+    </center>
+
+</BorderPane>
