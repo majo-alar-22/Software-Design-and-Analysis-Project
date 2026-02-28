@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Intramural Soccer (JavaFX + SQLite)
 
 Signup + Login + Dashboard stub.
@@ -18,3 +19,6 @@ SQLite DB is created at:
 
 Table:
 - `users(id, name, email, password_hash, salt, created_at)`
+=======
+# Software-Design-and-Analysis-Project
+>>>>>>> 9767ddb0caf08fb2edee2b0bff1b31035ddbe752
