@@ -1,6 +1,6 @@
 # Intramural Soccer (JavaFX + SQLite)
 
-Sprint 2: Signup + Login + Dashboard stub.
+Signup + Login + Dashboard stub.
 
 ## Run
 ```bash
