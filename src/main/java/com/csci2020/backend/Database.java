@@ -122,12 +122,10 @@ public class Database {
      */
     public void saveTeam(Team team){
         Transaction transaction = null;
-        System.out.println("Trying to save a team");
         try(Session session = getFactory().openSession()){
             transaction = session.beginTransaction();
             session.merge(team);
             transaction.commit();
-            System.out.println("Saved a team");
         } catch(Exception e){
             if(transaction != null){
                 transaction.rollback();
@@ -174,5 +172,29 @@ public class Database {
             System.err.println(e.getMessage());
         }
         return null;
+    }
+
+    /**
+     * Deletes a team from the database
+     * @param team Team to delete
+     */
+    public void deleteTeam(Team team){
+        System.out.printf("Deleting %s", team.getName());
+        Transaction transaction = null;
+        try(Session session = getFactory().openSession()){
+            transaction = session.beginTransaction();
+            session.createMutationQuery("UPDATE Player p SET p.team = null WHERE p.team.name = :name")
+                    .setParameter("name", team.getName())
+                    .executeUpdate();
+            session.createMutationQuery("DELETE FROM Team WHERE name = :name")
+                    .setParameter("name", team.getName())
+                    .executeUpdate();
+            transaction.commit();
+        } catch(Exception e){
+            if(transaction != null){
+                transaction.rollback();
+            }
+            System.err.println(e.getMessage());
+        }
     }
 }
