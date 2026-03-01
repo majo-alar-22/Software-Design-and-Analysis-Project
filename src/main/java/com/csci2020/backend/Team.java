@@ -8,10 +8,11 @@ import java.util.List;
 @Entity
 @Table(name = "teams")
 public class Team {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Integer ID;
 
+//    @GeneratedValue(strategy = GenerationType.IDENTITY)
+//    Integer ID;
+
+    @Id
     @Column(name = "name")
     String name;
 
@@ -85,9 +86,9 @@ public class Team {
         return this.roster;
     }
 
-    public Integer getID(){
-        return this.ID;
-    }
+//    public Integer getID(){
+//        return this.ID;
+//    }
 
     @Override
     public String toString(){

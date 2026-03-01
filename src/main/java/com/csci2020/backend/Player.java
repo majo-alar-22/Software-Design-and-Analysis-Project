@@ -76,6 +76,26 @@ public class Player {
     public Team getTeam(){
         return this.team;
     }
+
+    public void setFirstName(String firstName){
+        this.firstName = firstName;
+    }
+    public void setLastName(String lastName){
+        this.lastName = lastName;
+    }
+    public void setGoalCount(int goals){
+        this.goalCount = goals;
+    }
+    public void setShotCount(int shots){
+        this.shotCount = shots;
+    }
+    public void setSaveCount(int saves){
+        this.saveCount = saves;
+    }
+    public void setPenaltyCount(int penalties){
+        this.penaltyCount = penalties;
+    }
+
     public void setTeam(Team team){
         this.team = team;
     }

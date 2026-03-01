@@ -35,12 +35,10 @@ public class Database {
 
     public void savePlayer(Player player){
         Transaction transaction = null;
-        System.out.println("Trying to save a player");
         try(Session session = getFactory().openSession()){
             transaction = session.beginTransaction();
             session.merge(player);
             transaction.commit();
-            System.out.println("Saved a player");
         } catch(Exception e){
             if(transaction != null){
                 transaction.rollback();
@@ -55,10 +53,10 @@ public class Database {
             for(Player player : players) {
                 Team team = player.getTeam();
                 if(team != null){
-                    if(team.getID() == null){
+                    if(team.getName() == null){
                         session.persist(team);
                     } else {
-                        team = session.find(Team.class, team.getID());
+                        team = session.find(Team.class, team.getName());
                         player.setTeam(team);
                     }
                 }
@@ -120,5 +118,13 @@ public class Database {
             System.err.println(e.getMessage());
             return new ArrayList<>();
         }
+    }
+    public Team getTeamByName(String teamName){
+        try(Session session = getFactory().openSession()) {
+            return session.find(Team.class, teamName);
+        } catch(Exception e){
+            System.err.println(e.getMessage());
+        }
+        return null;
     }
 }

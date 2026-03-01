@@ -1,3 +1,5 @@
+package com.csci2020.database;
+
 import com.csci2020.backend.Database;
 import com.csci2020.backend.Player;
 import com.csci2020.backend.Team;
