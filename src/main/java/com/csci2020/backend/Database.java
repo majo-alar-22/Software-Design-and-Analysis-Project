@@ -1,0 +1,124 @@
+package com.csci2020.backend;
+
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+import org.hibernate.cfg.Configuration;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
+
+public class Database {
+    private static SessionFactory factory = null;
+    public static Session getSession(){
+        return getFactory().openSession();
+    }
+    public static SessionFactory getFactory(){
+        if(factory == null){
+            Configuration conf = new Configuration();
+            Properties settings = new Properties();
+            settings.put("hibernate.connection.driver_class", "org.h2.Driver");
+            settings.put("hibernate.connection.url","jdbc:h2:file:./test.h2");
+            settings.put("hibernate.connection.username", "sa");
+            settings.put("hibernate.connection.password","");
+            settings.put("hibernate.show_sql", "true");
+            settings.put("hibernate.hbm2ddl.auto","update");
+            conf.setProperties(settings);
+            conf.addAnnotatedClass(Player.class);
+            conf.addAnnotatedClass(Team.class);
+            factory = conf.buildSessionFactory(new StandardServiceRegistryBuilder().applySettings(conf.getProperties()).build());
+        }
+        return factory;
+    }
+
+    public void savePlayer(Player player){
+        Transaction transaction = null;
+        System.out.println("Trying to save a player");
+        try(Session session = getFactory().openSession()){
+            transaction = session.beginTransaction();
+            session.merge(player);
+            transaction.commit();
+            System.out.println("Saved a player");
+        } catch(Exception e){
+            if(transaction != null){
+                transaction.rollback();
+            }
+            System.err.println(e.getMessage());
+        }
+    }
+    public void savePlayers(List<Player> players) {
+        Transaction transaction = null;
+        try (Session session = getFactory().openSession()) {
+            transaction = session.beginTransaction();
+            for(Player player : players) {
+                Team team = player.getTeam();
+                if(team != null){
+                    if(team.getID() == null){
+                        session.persist(team);
+                    } else {
+                        team = session.find(Team.class, team.getID());
+                        player.setTeam(team);
+                    }
+                }
+                session.merge(player);
+            }
+            transaction.commit();
+        } catch (Exception e) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
+            System.err.println(e.getMessage());
+        }
+    }
+
+    public void saveTeams(List<Team> teams) {
+        Transaction transaction = null;
+        try (Session session = getFactory().openSession()) {
+            transaction = session.beginTransaction();
+
+            for (Team team : teams) {
+                session.merge(team);
+            }
+
+            transaction.commit();
+        } catch (Exception e) {
+            if (transaction != null) transaction.rollback();
+            e.printStackTrace();
+        }
+    }
+
+    public void saveTeam(Team team){
+        Transaction transaction = null;
+        System.out.println("Trying to save a team");
+        try(Session session = getFactory().openSession()){
+            transaction = session.beginTransaction();
+            session.merge(team);
+            transaction.commit();
+            System.out.println("Saved a team");
+        } catch(Exception e){
+            if(transaction != null){
+                transaction.rollback();
+            }
+            System.err.println(e.getMessage());
+        }
+    }
+
+    public List<Team> getAllTeams(){
+        try(Session session = getFactory().openSession()){
+            return session.createQuery("FROM Team", Team.class).getResultList();
+        } catch(Exception e){
+            System.err.println(e.getMessage());
+            return new ArrayList<>();
+        }
+    }
+    public List<Player> getAllPlayers(){
+        try(Session session = getFactory().openSession()){
+            return session.createQuery("FROM Player", Player.class).getResultList();
+        } catch(Exception e){
+            System.err.println(e.getMessage());
+            return new ArrayList<>();
+        }
+    }
+}

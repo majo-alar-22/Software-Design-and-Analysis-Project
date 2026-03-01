@@ -1,24 +1,14 @@
-<<<<<<< HEAD
-# Intramural Soccer (JavaFX + SQLite)
+# Soccer Manager
+TODO
 
-Signup + Login + Dashboard stub.
+# Features
 
-## Run
-```bash
-mvn javafx:run
-```
+TODO
 
-## Screens
-- `login.fxml` → log in
-- `signup.fxml` → create account
-- `dashboard.fxml` → landing page after login
+# Installation
 
-## Database
-SQLite DB is created at:
-- `${user.home}/soccer.db`
+TODO
 
-Table:
-- `users(id, name, email, password_hash, salt, created_at)`
-=======
-# Software-Design-and-Analysis-Project
->>>>>>> 9767ddb0caf08fb2edee2b0bff1b31035ddbe752
+# Usage
+
+TODO
