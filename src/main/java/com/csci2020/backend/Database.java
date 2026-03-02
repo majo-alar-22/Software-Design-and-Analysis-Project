@@ -6,14 +6,43 @@ import org.hibernate.Transaction;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.logging.*;
 
 /**
  * Data Access Object used to control the database.
  */
 public class Database {
+    private static Logger DATABASE_LOGGER;
+    private static final Path LOG_PATH = Path.of(".", "latest.log");
+    public static Logger getLogger(){
+        if(DATABASE_LOGGER == null){
+            Logger logger = Logger.getLogger(Database.class.getName());
+            try {
+                FileHandler fh = new FileHandler(LOG_PATH.toString());
+
+                Formatter formatter = new Formatter() {
+                    @Override
+                    public String format(LogRecord logRecord) {
+                        return String.format("[%s] %s: %s%n", logRecord.getMillis(), logRecord.getLevel().getName(), logRecord.getMessage());
+                    }
+                };
+                fh.setFormatter(formatter);
+                logger.addHandler(fh);
+                logger.setUseParentHandlers(false);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            DATABASE_LOGGER = logger;
+        }
+        return DATABASE_LOGGER;
+    }
+    private static final String QUERY_ERROR_MESSAGE = "Failed to create query: ",
+        TRANSACTION_ERROR_MESSAGE = "Failed to commit transaction: ";
     private static SessionFactory factory = null;
     public static Session getSession(){
         return getFactory().openSession();
@@ -25,7 +54,9 @@ public class Database {
      * @return {@link SessionFactory} singleton
      */
     public static SessionFactory getFactory(){
+        getLogger().log(Level.INFO, "Retrieving SessionFactory");
         if(factory == null){
+            getLogger().log(Level.INFO, "Creating SessionFactory");
             Configuration conf = new Configuration();
             Properties settings = new Properties();
             settings.put("hibernate.connection.driver_class", "org.h2.Driver");
@@ -46,9 +77,14 @@ public class Database {
      * Save a single player to the database. To save multiple players, prefer
      * {@link Database#savePlayers(List)} to avoid multiple requests.
      * @see Database#savePlayers(List)
-     * @param player
+     * @param player Player to save
      */
     public void savePlayer(Player player){
+        if(player == null){
+            getLogger().log(Level.WARNING, "Attempting to save null player", new NullPointerException("Null player"));
+            return;
+        }
+        getLogger().log(Level.INFO, "Saving player");
         Transaction transaction = null;
         try(Session session = getFactory().openSession()){
             transaction = session.beginTransaction();
@@ -58,7 +94,7 @@ public class Database {
             if(transaction != null){
                 transaction.rollback();
             }
-            System.err.println(e.getMessage());
+            getLogger().log(Level.SEVERE, TRANSACTION_ERROR_MESSAGE + e.getMessage(), e);
         }
     }
 
@@ -68,6 +104,15 @@ public class Database {
      * @param players List of players to save
      */
     public void savePlayers(List<Player> players) {
+        if(players == null) {
+            getLogger().log(Level.WARNING, "Attempted to save a null player list", new NullPointerException("Null player list"));
+            return;
+        }
+        if(players.isEmpty()){
+            getLogger().log(Level.WARNING, "Attempted to save an empty player list");
+            return;
+        }
+        getLogger().log(Level.INFO, "Saving players");
         Transaction transaction = null;
         try (Session session = getFactory().openSession()) {
             transaction = session.beginTransaction();
@@ -88,7 +133,7 @@ public class Database {
             if (transaction != null) {
                 transaction.rollback();
             }
-            System.err.println(e.getMessage());
+            getLogger().log(Level.SEVERE, TRANSACTION_ERROR_MESSAGE + e.getMessage(), e);
         }
     }
 
@@ -98,6 +143,11 @@ public class Database {
      * @param teams List of teams to save
      */
     public void saveTeams(List<Team> teams) {
+        if(teams == null || teams.isEmpty()) {
+            getLogger().log(Level.WARNING, "Attempted to save an empty or null team list");
+            return;
+        }
+        getLogger().log(Level.INFO, "Saving teams");
         Transaction transaction = null;
         try (Session session = getFactory().openSession()) {
             transaction = session.beginTransaction();
@@ -107,7 +157,7 @@ public class Database {
             transaction.commit();
         } catch (Exception e) {
             if (transaction != null) transaction.rollback();
-            e.printStackTrace();
+            getLogger().log(Level.SEVERE, TRANSACTION_ERROR_MESSAGE + e.getMessage(), e);
         }
     }
 
@@ -121,6 +171,11 @@ public class Database {
      * @param team The team to save to the database.
      */
     public void saveTeam(Team team){
+        if(team == null){
+            getLogger().log(Level.WARNING, "Attempted to save a null team");
+            return;
+        }
+        getLogger().log(Level.INFO, "Saving team " + team.getName());
         Transaction transaction = null;
         try(Session session = getFactory().openSession()){
             transaction = session.beginTransaction();
@@ -130,7 +185,7 @@ public class Database {
             if(transaction != null){
                 transaction.rollback();
             }
-            System.err.println(e.getMessage());
+            getLogger().log(Level.SEVERE, TRANSACTION_ERROR_MESSAGE + e.getMessage(), e);
         }
     }
 
@@ -139,10 +194,11 @@ public class Database {
      * @return List of all teams stored in the database
      */
     public List<Team> getAllTeams(){
+        getLogger().log(Level.INFO, "Retrieving all teams from database");
         try(Session session = getFactory().openSession()){
             return session.createQuery("FROM Team", Team.class).getResultList();
         } catch(Exception e){
-            System.err.println(e.getMessage());
+            getLogger().log(Level.SEVERE, QUERY_ERROR_MESSAGE + e.getMessage(), e);
             return new ArrayList<>();
         }
     }
@@ -152,10 +208,11 @@ public class Database {
      * @return List of all players in the database.
      */
     public List<Player> getAllPlayers(){
+        getLogger().log(Level.INFO, "Retrieving all players from database");
         try(Session session = getFactory().openSession()){
             return session.createQuery("FROM Player", Player.class).getResultList();
         } catch(Exception e){
-            System.err.println(e.getMessage());
+            getLogger().log(Level.SEVERE, QUERY_ERROR_MESSAGE + e.getMessage(), e);
             return new ArrayList<>();
         }
     }
@@ -166,10 +223,11 @@ public class Database {
      * @return A team matching the identifier, or <code>null</code> if not found.
      */
     public Team getTeamByName(String teamName){
+        getLogger().log(Level.INFO, "Retrieving team with name " + teamName);
         try(Session session = getFactory().openSession()) {
             return session.find(Team.class, teamName);
         } catch(Exception e){
-            System.err.println(e.getMessage());
+            getLogger().log(Level.SEVERE, QUERY_ERROR_MESSAGE + e.getMessage(), e);
         }
         return null;
     }
@@ -179,7 +237,11 @@ public class Database {
      * @param team Team to delete
      */
     public void deleteTeam(Team team){
-        System.out.printf("Deleting %s", team.getName());
+        if(team == null){
+            getLogger().log(Level.WARNING, "Attempting to delete null team");
+            return;
+        }
+        getLogger().log(Level.INFO, "Deleting team" + team.getName());
         Transaction transaction = null;
         try(Session session = getFactory().openSession()){
             transaction = session.beginTransaction();
@@ -194,7 +256,7 @@ public class Database {
             if(transaction != null){
                 transaction.rollback();
             }
-            System.err.println(e.getMessage());
+            getLogger().log(Level.SEVERE, TRANSACTION_ERROR_MESSAGE + e.getMessage(), e);
         }
     }
 
@@ -205,14 +267,14 @@ public class Database {
      * @return List of all players with the given name
      */
     public List<Player> getPlayersByName(String firstName, String lastName){
+        getLogger().log(Level.INFO, String.format("Retrieving players with firstName=%s, lastName=%s", firstName, lastName));
         try(Session session = getFactory().openSession()) {
             return session.createQuery("FROM Player WHERE firstName = :firstName AND lastName = :lastName", Player.class)
                     .setParameter("firstName", firstName)
                     .setParameter("lastName", lastName)
                     .getResultList();
         } catch(Exception e){
-            System.err.println(e.getMessage());
-            e.printStackTrace();
+            getLogger().log(Level.SEVERE, QUERY_ERROR_MESSAGE + e.getMessage(), e);
             return new ArrayList<>();
         }
     }
@@ -223,13 +285,13 @@ public class Database {
      * @return List of all players with the given first name
      */
     public List<Player> getPlayersByFirstName(String firstName){
+        getLogger().log(Level.INFO, String.format("Retrieving players with firstName=%s", firstName));
         try(Session session = getFactory().openSession()) {
             return session.createQuery("FROM Player WHERE firstName = :firstName", Player.class)
                     .setParameter("firstName", firstName)
                     .getResultList();
         } catch(Exception e){
-            System.err.println(e.getMessage());
-            e.printStackTrace();
+            getLogger().log(Level.SEVERE, QUERY_ERROR_MESSAGE + e.getMessage(), e);
             return new ArrayList<>();
         }
     }
@@ -240,13 +302,13 @@ public class Database {
      * @return List of all players with the given last name
      */
     public List<Player> getPlayersByLastName(String lastName){
+        getLogger().log(Level.INFO, String.format("Retrieving players with lastName=%s", lastName));
         try(Session session = getFactory().openSession()) {
             return session.createQuery("FROM Player WHERE lastName = :lastName", Player.class)
                     .setParameter("lastName", lastName)
                     .getResultList();
         } catch(Exception e){
-            System.err.println(e.getMessage());
-            e.printStackTrace();
+            getLogger().log(Level.SEVERE, QUERY_ERROR_MESSAGE + e.getMessage(), e);
             return new ArrayList<>();
         }
     }
