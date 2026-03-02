@@ -162,7 +162,7 @@ public class Database {
 
     /**
      * Returns a single team from the database, identified by their unique name.
-     * @param teamName {@link Team#name} (Primary Key) to search for
+     * @param teamName Name to search for
      * @return A team matching the identifier, or <code>null</code> if not found.
      */
     public Team getTeamByName(String teamName){
@@ -195,6 +195,59 @@ public class Database {
                 transaction.rollback();
             }
             System.err.println(e.getMessage());
+        }
+    }
+
+    /**
+     * Gets a list of all players with the given first and last name
+     * @param firstName Player's first name
+     * @param lastName Player's last name
+     * @return List of all players with the given name
+     */
+    public List<Player> getPlayersByName(String firstName, String lastName){
+        try(Session session = getFactory().openSession()) {
+            return session.createQuery("FROM Player WHERE firstName = :firstName AND lastName = :lastName", Player.class)
+                    .setParameter("firstName", firstName)
+                    .setParameter("lastName", lastName)
+                    .getResultList();
+        } catch(Exception e){
+            System.err.println(e.getMessage());
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+
+    /**
+     * Gets a list of all players with the given first name
+     * @param firstName The player's first name
+     * @return List of all players with the given first name
+     */
+    public List<Player> getPlayersByFirstName(String firstName){
+        try(Session session = getFactory().openSession()) {
+            return session.createQuery("FROM Player WHERE firstName = :firstName", Player.class)
+                    .setParameter("firstName", firstName)
+                    .getResultList();
+        } catch(Exception e){
+            System.err.println(e.getMessage());
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+
+    /**
+     * Gets a list of all players with the given last name
+     * @param lastName The player's last name
+     * @return List of all players with the given last name
+     */
+    public List<Player> getPlayersByLastName(String lastName){
+        try(Session session = getFactory().openSession()) {
+            return session.createQuery("FROM Player WHERE lastName = :lastName", Player.class)
+                    .setParameter("lastName", lastName)
+                    .getResultList();
+        } catch(Exception e){
+            System.err.println(e.getMessage());
+            e.printStackTrace();
+            return new ArrayList<>();
         }
     }
 }
