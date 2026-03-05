@@ -1,11 +1,14 @@
 package com.csci2020.backend;
 
+import jakarta.persistence.NoResultException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 
+import javax.security.auth.login.AccountException;
+import javax.security.auth.login.AccountNotFoundException;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -13,12 +16,14 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 import java.util.logging.*;
+import java.util.regex.Pattern;
 
 /**
  * Data Access Object used to control the database.
  */
 public class Database {
-    private final Logger logger = Logging.createLogger("Database", Path.of(".","latest.log"));
+    private static Account currentUser;
+    private static final Logger logger = Logging.createLogger("Database", Path.of(".","latest.log"));
     private static final String QUERY_ERROR_MESSAGE = "Failed to create query: ",
         TRANSACTION_ERROR_MESSAGE = "Failed to commit transaction: ";
     private static SessionFactory factory = null;
@@ -39,11 +44,12 @@ public class Database {
             settings.put("hibernate.connection.url","jdbc:h2:file:./test.h2");
             settings.put("hibernate.connection.username", "sa");
             settings.put("hibernate.connection.password","");
-            settings.put("hibernate.show_sql", "true");
+            settings.put("hibernate.show_sql", "false");
             settings.put("hibernate.hbm2ddl.auto","update");
             conf.setProperties(settings);
             conf.addAnnotatedClass(Player.class);
             conf.addAnnotatedClass(Team.class);
+            conf.addAnnotatedClass(Account.class);
             factory = conf.buildSessionFactory(new StandardServiceRegistryBuilder().applySettings(conf.getProperties()).build());
         }
         return factory;
@@ -59,7 +65,7 @@ public class Database {
         if(player == null){
             throw new IllegalArgumentException("Player may not be null");
         }
-        logger.log(Level.FINER, "Saving player");
+        logger.log(Level.FINE, "Saving player");
         Transaction transaction = null;
         try(Session session = getFactory().openSession()){
             transaction = session.beginTransaction();
@@ -86,7 +92,7 @@ public class Database {
             logger.log(Level.FINE, "Attempted to save an empty player list");
             return;
         }
-        logger.log(Level.FINER, "Saving players");
+        logger.log(Level.FINE, "Saving players");
         Transaction transaction = null;
         try (Session session = getFactory().openSession()) {
             transaction = session.beginTransaction();
@@ -124,7 +130,7 @@ public class Database {
             logger.log(Level.FINE, "Attempted to save an empty team list");
             return;
         }
-        logger.log(Level.FINER, "Saving teams");
+        logger.log(Level.FINE, "Saving teams");
         Transaction transaction = null;
         try (Session session = getFactory().openSession()) {
             transaction = session.beginTransaction();
@@ -154,7 +160,7 @@ public class Database {
         if(team == null){
             throw new IllegalArgumentException("Argument may not be null");
         }
-        logger.log(Level.FINER, "Saving team " + team.getName());
+        logger.log(Level.FINE, "Saving team " + team.getName());
         Transaction transaction = null;
         try(Session session = getFactory().openSession()){
             transaction = session.beginTransaction();
@@ -173,7 +179,7 @@ public class Database {
      * @return List of all teams stored in the database
      */
     public List<Team> getAllTeams(){
-        logger.log(Level.FINER, "Retrieving all teams from database");
+        logger.log(Level.FINE, "Retrieving all teams from database");
         try(Session session = getFactory().openSession()){
             return session.createQuery("FROM Team", Team.class).getResultList();
         } catch(Exception e){
@@ -187,7 +193,7 @@ public class Database {
      * @return List of all players in the database.
      */
     public List<Player> getAllPlayers(){
-        logger.log(Level.FINER, "Retrieving all players from database");
+        logger.log(Level.FINE, "Retrieving all players from database");
         try(Session session = getFactory().openSession()){
             return session.createQuery("FROM Player", Player.class).getResultList();
         } catch(Exception e){
@@ -202,7 +208,7 @@ public class Database {
      * @return A team matching the identifier, or <code>null</code> if not found.
      */
     public Team getTeamByName(String teamName){
-        logger.log(Level.FINER, "Retrieving team with name " + teamName);
+        logger.log(Level.FINE, "Retrieving team with name " + teamName);
         try(Session session = getFactory().openSession()) {
             return session.find(Team.class, teamName);
         } catch(Exception e){
@@ -219,7 +225,7 @@ public class Database {
         if(team == null){
             throw new IllegalArgumentException("Team may not be null");
         }
-        logger.log(Level.FINER, "Deleting team" + team.getName());
+        logger.log(Level.FINE, "Deleting team" + team.getName());
         Transaction transaction = null;
         try(Session session = getFactory().openSession()){
             transaction = session.beginTransaction();
@@ -245,7 +251,7 @@ public class Database {
      * @return List of all players with the given name
      */
     public List<Player> getPlayersByName(String firstName, String lastName){
-        logger.log(Level.FINER, String.format("Retrieving players with firstName=%s, lastName=%s", firstName, lastName));
+        logger.log(Level.FINE, String.format("Retrieving players with firstName=%s, lastName=%s", firstName, lastName));
         try(Session session = getFactory().openSession()) {
             return session.createQuery("FROM Player WHERE firstName = :firstName AND lastName = :lastName", Player.class)
                     .setParameter("firstName", firstName)
@@ -263,7 +269,7 @@ public class Database {
      * @return List of all players with the given first name
      */
     public List<Player> getPlayersByFirstName(String firstName){
-        logger.log(Level.FINER, String.format("Retrieving players with firstName=%s", firstName));
+        logger.log(Level.FINE, String.format("Retrieving players with firstName=%s", firstName));
         try(Session session = getFactory().openSession()) {
             return session.createQuery("FROM Player WHERE firstName = :firstName", Player.class)
                     .setParameter("firstName", firstName)
@@ -280,7 +286,7 @@ public class Database {
      * @return List of all players with the given last name
      */
     public List<Player> getPlayersByLastName(String lastName){
-        logger.log(Level.FINER, String.format("Retrieving players with lastName=%s", lastName));
+        logger.log(Level.FINE, String.format("Retrieving players with lastName=%s", lastName));
         try(Session session = getFactory().openSession()) {
             return session.createQuery("FROM Player WHERE lastName = :lastName", Player.class)
                     .setParameter("lastName", lastName)
@@ -289,5 +295,169 @@ public class Database {
             logger.log(Level.SEVERE, QUERY_ERROR_MESSAGE + e.getMessage(), e);
             return new ArrayList<>();
         }
+    }
+    static Logger accountLogger = Logging.createLogger("account", Path.of(".","account.log"));
+    public long getUniqueIdentifierFromUsername(String username){
+//        return (long) (Math.random()*10+1);
+        try(Session session = getFactory().openSession()) {
+            List<String> usernames = session.createQuery("SELECT user.username FROM Account user WHERE user.username = :username OR user.username LIKE CONCAT(:username,'%')", String.class)
+                    .setParameter("username",username)
+                    .getResultList().stream()
+                    .filter(s -> s.matches(Pattern.quote(username) + "\\d+")).toList();
+            accountLogger.log(Level.INFO, username);
+            for(String name : usernames){
+//                System.out.printf("%s: %s%n", username, name);
+                accountLogger.log(Level.INFO, "\t" + name);
+            }
+                    return usernames.stream().map(s -> {
+                        System.out.println(s +": " + s.substring(username.length()));
+                        return s.substring(username.length());
+                    })
+                    .mapToLong(Long::parseLong)
+                    .max().orElse(0) + 1;
+
+//            return (long) (Math.random()*10+1);
+        } catch(Exception e){
+//            e.printStackTrace();
+            logger.log(Level.SEVERE, QUERY_ERROR_MESSAGE + e.getMessage(), e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void saveAccount(Account account){
+        if(account == null){
+            throw new IllegalArgumentException("Account may not be null!");
+        }
+        logger.log(Level.FINE, "Saving account");
+        Transaction transaction = null;
+        try (Session session = getFactory().openSession()) {
+            transaction = session.beginTransaction();
+            session.merge(account);
+            transaction.commit();
+        } catch (Exception e) {
+//            if (transaction != null) transaction.rollback();
+            logger.log(Level.SEVERE, TRANSACTION_ERROR_MESSAGE + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Saves a list of teams to the database. In the case of an error, transactions will not be committed.
+     * @see Database#saveTeam(Team)
+     * @param teams List of teams to save
+     */
+    public void saveAccounts(List<Account> accounts) {
+        if(accounts == null){
+            throw new IllegalArgumentException("Accounts may not be null!");
+        }
+        if(accounts.isEmpty()) {
+            logger.log(Level.FINE, "Attempted to save an empty account list");
+            return;
+        }
+        logger.log(Level.FINE, "Saving accounts");
+        Transaction transaction = null;
+        try (Session session = getFactory().openSession()) {
+            transaction = session.beginTransaction();
+            for (Account account : accounts) {
+                if(account == null){
+                    throw new IllegalArgumentException("Accounts may not contain null elements");
+                }
+                session.merge(account);
+            }
+            transaction.commit();
+        } catch (Exception e) {
+            if (transaction != null) transaction.rollback();
+            logger.log(Level.SEVERE, TRANSACTION_ERROR_MESSAGE + e.getMessage(), e);
+        }
+    }
+
+    public Account getAccount(String username) throws NoResultException{
+        logger.log(Level.FINE, String.format("Retrieving users with username=%s", username));
+        try(Session session = getFactory().openSession()) {
+            return session.createQuery("FROM Account WHERE username = :username", Account.class)
+                    .setParameter("username", username)
+                    .getSingleResult();
+        } catch(NoResultException e){
+            logger.log(Level.SEVERE, QUERY_ERROR_MESSAGE + e.getMessage(), e);
+            throw e;
+        }
+    }
+    public Account createNewAccount(String firstName, String lastName, String password){
+        Database db = new Database();
+        String targetName = firstName + "." + lastName;
+        long identifier = db.getUniqueIdentifierFromUsername(targetName);
+        String username = targetName + (identifier == 1 ? "" : identifier);
+        logger.log(Level.FINE, String.format("Trying to create account of username %s", username));
+        Player player = new Player(firstName, lastName);
+        byte[] salt = Authentication.generateSalt();
+        Account acc = new Account(username, player, salt, Authentication.hashPassword(password, salt), false);
+        db.saveAccount(acc);
+        return acc;
+    }
+
+    /**
+     * Get an account with the given username, and try to login using the given password.
+     * If the account does not exist or the password is incorrect, throws an error.
+     * @param username
+     * @param password
+     * @return
+     */
+    public boolean login(String username, String password){
+        //TODO remove all mentions of password in output, this is just for debugging
+        logger.log(Level.FINE, String.format("Retrieving account with username=%s, password=%s", username, "*".repeat(password.length())));
+
+        try(Session session = getFactory().openSession()) {
+            Account acc = session.createQuery("FROM Account WHERE username = :username", Account.class)
+                    .setParameter("username", username)
+                    .getSingleResultOrNull();
+            if(acc == null){
+                logger.log(Level.INFO, "Failed to find account with provided credentials");
+                return false;
+            }
+            byte[] challenge = Authentication.generateChallenge();
+            byte[] userHash = Authentication.hashPassword(password, acc.getSalt());
+            byte[] userHmac = Authentication.HMAC(userHash, challenge);
+            byte[] serverHmac = Authentication.HMAC(acc.getPasswordHash(), challenge);
+            if(Authentication.challengeResult(userHmac, serverHmac)){
+                currentUser = acc;
+                logger.log(Level.INFO, "Successfully logged in");
+                return true;
+            } else {
+                logger.log(Level.INFO, "Failed to find account with provided credentials");
+                return false;
+            }
+        } catch(Exception e){
+            logger.log(Level.SEVERE, QUERY_ERROR_MESSAGE + e.getMessage(), e);
+        }
+        return false;
+    }
+
+    public void logout(){
+        currentUser = null;
+    }
+
+    public boolean isNewDatabase(){
+        try(Session session = getFactory().openSession()) {
+            return session.createQuery("FROM Account", Account.class)
+                    .getResultCount() == 0;
+        } catch(NoResultException e){
+            logger.log(Level.SEVERE, QUERY_ERROR_MESSAGE + e.getMessage(), e);
+            return false;
+        }
+    }
+
+    public Account createAdminAccount(String firstName, String lastName, String password){
+        if(currentUser != null && currentUser.isAdmin() || isNewDatabase()){
+            Database db = new Database();
+            String targetName = firstName + "." + lastName;
+            long identifier = db.getUniqueIdentifierFromUsername(targetName);
+            String username = targetName + (identifier == 1 ? "" : identifier);
+            logger.log(Level.FINE, String.format("Trying to create admin account of username %s", username));
+            Player player = new Player(firstName, lastName);
+            byte[] salt = Authentication.generateSalt();
+            Account acc = new Account(username, player, salt, Authentication.hashPassword(password, salt), true);
+            db.saveAccount(acc);
+            return acc;
+        }
+        return null;
     }
 }

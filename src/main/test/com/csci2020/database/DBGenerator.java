@@ -1,12 +1,11 @@
 package com.csci2020.database;
 
-import com.csci2020.backend.Database;
-import com.csci2020.backend.Logging;
-import com.csci2020.backend.Player;
-import com.csci2020.backend.Team;
+import com.csci2020.backend.*;
 
 import java.nio.file.Path;
+import java.security.SecureRandom;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 
@@ -48,27 +47,35 @@ public class DBGenerator {
             "Savage Eagles", "Thunder Tigers", "Crimson Panthers", "Obsidian Wolves", "Mystic Wolves"
     };
     //Names above were generated with AI
-    static int testInt = 0;
+
     public static void main(String[] args){
         List<String> remainingTeamNames = new ArrayList<>(List.of(teamNames));
         List<Team> teams = new ArrayList<>();
         List<Player> players = new ArrayList<>();
+        List<Account> accounts = new ArrayList<>();
+        Database db = new Database();
+
         for(int i = 0; i < 10; i++){
             String teamName = randomItemFromList(remainingTeamNames);
             Team t = new Team(teamName);
             remainingTeamNames.remove(teamName);
             teams.add(t);
         }
-        Database db = new Database();
         for(int i = 0; i < 1000; i++){
             Team team = randomItemFromList(teams);
-            Player p = new Player(randomItemFromArray(firstNames), randomItemFromArray(lastNames));
+            String firstName = randomItemFromArray(firstNames);
+            String lastName = randomItemFromArray(lastNames);
+            //TODO not this
+            String password = firstName + lastName;
+            Account acc = db.createNewAccount(firstName, lastName, password);
+            accounts.add(acc);
+            Player p = acc.getPlayer();
             team.addPlayerToRoster(p);
             players.add(p);
         }
+        Account admin = db.createAdminAccount("Admin", "Account", "password");
         db.saveTeams(teams);
         db.savePlayers(players);
-
         for(Team t : db.getAllTeams()){
             if(t.getCaptain() != null) {
                 System.out.printf("%s: %s %s%n", t.getName(), t.getCaptain().getFirstName(), t.getCaptain().getLastName());
@@ -80,20 +87,34 @@ public class DBGenerator {
             }
         }
 
-        db.getPlayersByLastName("Smith").forEach(System.out::println);
+        db.login("Admin.Account", "password");
+
+//        Arrays.stream(Player.class.getDeclaredFields()).forEach(field -> {
+//            try {
+//                field.setAccessible(true);
+//                System.out.printf("%s: %s%n", field.getName(), field.get(db.getPlayersByFirstName("Steve").getFirst()));
+//            } catch (IllegalAccessException e) {
+//                throw new RuntimeException(e);
+//            }
+//        });
+//        db.deleteTeam(db.getPlayersByFirstName("Steve").getFirst().getTeam());
+//        Arrays.stream(Player.class.getDeclaredFields()).forEach(field -> {
+//            try {
+//                field.setAccessible(true);
+//                System.out.printf("%s: %s%n", field.getName(), field.get(db.getPlayersByFirstName("Steve").getFirst()));
+//            } catch (IllegalAccessException e) {
+//                throw new RuntimeException(e);
+//            }
+//        });
         testLogger();
-        System.out.println(testInt);
     }
 
     public static void testLogger(){
-        try{
-            testInt = 1;
-            throw new Exception("This is an exception!");
-        } catch (Exception e){
-            System.out.println("Failed");
-            Logging.createLogger("DBGenerator", Path.of(".","generator.log")).log(Level.SEVERE, "Failed to perform some operation", e);
-            testInt = 2;
-        }
+//        try{
+//            throw new Exception("This is an exception!");
+//        } catch (Exception e){
+//            Logging.createLogger("DBGenerator", Path.of(".","generator.log")).log(Level.SEVERE, "Failed to perform some operation", e);
+//        }
     }
     public static <T> T randomItemFromArray(T[] array){
         int index = (int) Math.floor(Math.random()*array.length);

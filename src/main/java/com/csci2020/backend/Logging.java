@@ -3,10 +3,7 @@ package com.csci2020.backend;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Date;
-import java.util.logging.FileHandler;
-import java.util.logging.Formatter;
-import java.util.logging.LogRecord;
-import java.util.logging.Logger;
+import java.util.logging.*;
 
 /**
  * Class to generate a logger to output debug information to a file
@@ -46,6 +43,7 @@ public class Logging {
             fh.setFormatter(formatter);
             logger.addHandler(fh);
             logger.setUseParentHandlers(false);
+            logger.setLevel(Level.FINEST);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
