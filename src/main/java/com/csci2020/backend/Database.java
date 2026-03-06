@@ -22,26 +22,23 @@ import java.util.regex.Pattern;
  * Data Access Object used to control the database.
  */
 public class Database {
-    private static Account currentUser;
-    private static final Logger logger = Logging.createLogger("Database", Path.of(".","latest.log"));
+    private Account currentUser;
+    private final Logger logger = Logging.createLogger("Database", Path.of(".","latest.log"));
     private static final String QUERY_ERROR_MESSAGE = "Failed to create query: ",
         TRANSACTION_ERROR_MESSAGE = "Failed to commit transaction: ";
     private static SessionFactory factory = null;
-    public static Session getSession(){
-        return getFactory().openSession();
-    }
-
+    private final Path filepath;
     /**
      * Constructs or returns a singleton {@link SessionFactory} used to access the database.
      * This method should likely not be called outside this class, but is available for any custom queries needed.
      * @return {@link SessionFactory} singleton
      */
-    public static SessionFactory getFactory(){
+    public SessionFactory getFactory(){
         if(factory == null){
             Configuration conf = new Configuration();
             Properties settings = new Properties();
             settings.put("hibernate.connection.driver_class", "org.h2.Driver");
-            settings.put("hibernate.connection.url","jdbc:h2:file:./test.h2");
+            settings.put("hibernate.connection.url","jdbc:h2:file:" + filepath.toString());
             settings.put("hibernate.connection.username", "sa");
             settings.put("hibernate.connection.password","");
             settings.put("hibernate.show_sql", "false");
@@ -53,6 +50,10 @@ public class Database {
             factory = conf.buildSessionFactory(new StandardServiceRegistryBuilder().applySettings(conf.getProperties()).build());
         }
         return factory;
+    }
+
+    public Database(Path filepath){
+        this.filepath = filepath;
     }
 
     /**
@@ -382,15 +383,14 @@ public class Database {
         }
     }
     public Account createNewAccount(String firstName, String lastName, String password){
-        Database db = new Database();
         String targetName = firstName + "." + lastName;
-        long identifier = db.getUniqueIdentifierFromUsername(targetName);
+        long identifier = this.getUniqueIdentifierFromUsername(targetName);
         String username = targetName + (identifier == 1 ? "" : identifier);
         logger.log(Level.FINE, String.format("Trying to create account of username %s", username));
         Player player = new Player(firstName, lastName);
         byte[] salt = Authentication.generateSalt();
         Account acc = new Account(username, player, salt, Authentication.hashPassword(password, salt), false);
-        db.saveAccount(acc);
+        this.saveAccount(acc);
         return acc;
     }
 
@@ -447,15 +447,14 @@ public class Database {
 
     public Account createAdminAccount(String firstName, String lastName, String password){
         if(currentUser != null && currentUser.isAdmin() || isNewDatabase()){
-            Database db = new Database();
             String targetName = firstName + "." + lastName;
-            long identifier = db.getUniqueIdentifierFromUsername(targetName);
+            long identifier = this.getUniqueIdentifierFromUsername(targetName);
             String username = targetName + (identifier == 1 ? "" : identifier);
             logger.log(Level.FINE, String.format("Trying to create admin account of username %s", username));
             Player player = new Player(firstName, lastName);
             byte[] salt = Authentication.generateSalt();
             Account acc = new Account(username, player, salt, Authentication.hashPassword(password, salt), true);
-            db.saveAccount(acc);
+            this.saveAccount(acc);
             return acc;
         }
         return null;

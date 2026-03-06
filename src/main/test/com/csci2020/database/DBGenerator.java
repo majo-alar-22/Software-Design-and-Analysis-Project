@@ -47,13 +47,13 @@ public class DBGenerator {
             "Savage Eagles", "Thunder Tigers", "Crimson Panthers", "Obsidian Wolves", "Mystic Wolves"
     };
     //Names above were generated with AI
-
+    static Database db = new Database(Path.of(".","database"));
     public static void main(String[] args){
         List<String> remainingTeamNames = new ArrayList<>(List.of(teamNames));
         List<Team> teams = new ArrayList<>();
         List<Player> players = new ArrayList<>();
         List<Account> accounts = new ArrayList<>();
-        Database db = new Database();
+
 
         for(int i = 0; i < 10; i++){
             String teamName = randomItemFromList(remainingTeamNames);

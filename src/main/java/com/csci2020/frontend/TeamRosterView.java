@@ -13,9 +13,11 @@ public class TeamRosterView extends JPanel {
     private final JTable roster;
     private final TeamRosterTableModel tableModel;
     private final JLabel teamNameLabel;
+    private final Database db;
     private static final String[] HEADERS = {"ID", "First Name", "Last Name"};
-    public TeamRosterView(Team team){
+    public TeamRosterView(Database db, Team team){
         this.tableModel = new TeamRosterTableModel(team);
+        this.db = db;
         this.roster = new JTable(tableModel);
         this.rosterScroller = new JScrollPane(roster);
         this.teamNameLabel = new JLabel(team.getName());
@@ -38,7 +40,7 @@ public class TeamRosterView extends JPanel {
         gbc.weighty = 1.0;
         this.add(rosterScroller,gbc);
     }
-    static class TeamRosterTableModel extends AbstractTableModel{
+    class TeamRosterTableModel extends AbstractTableModel{
         private final Team team;
         public TeamRosterTableModel(Team team){
             this.team = team;
@@ -84,7 +86,6 @@ public class TeamRosterView extends JPanel {
                 default:
                     break;
             }
-            Database db = new Database();
             db.savePlayer(p);
             fireTableCellUpdated(row, col);
         }
