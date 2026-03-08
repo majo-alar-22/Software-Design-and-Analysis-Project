@@ -8,18 +8,21 @@ import java.util.List;
 
 public class Window extends JFrame {
     TeamRosterView rosterView;
-    public Window(){
+    private final Database db;
+    public Window(Database db){
+        this.db = db;
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         this.setSize(1200,800);
         this.setLocationRelativeTo(null);
-        Database db = new Database();
-        List<Team> allTeams = db.getAllTeams();
-        if(!allTeams.isEmpty()) {
-            Team randomTeam = allTeams.get((int) Math.floor(Math.random() * allTeams.size()));
-            this.rosterView = new TeamRosterView(randomTeam);
-            this.add(rosterView);
-        } else {
-            throw new UnsupportedOperationException("Generate sample database first using DBGenerator.java");
-        }
+//        List<Team> allTeams = db.getAllTeams();
+//        if(!allTeams.isEmpty()) {
+//            Team randomTeam = allTeams.get((int) Math.floor(Math.random() * allTeams.size()));
+//            this.rosterView = new TeamRosterView(db, randomTeam);
+//            this.add(rosterView);
+//        } else {
+//            throw new UnsupportedOperationException("Generate sample database first using DBGenerator.java");
+//        }
+        LoginPanel loginPanel =new LoginPanel(db);
+        this.add(loginPanel);
     }
 }
