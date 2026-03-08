@@ -27,9 +27,9 @@ public class Authentication {
      * @param password Password
      * @param salt Salt
      */
-    public static byte[] hashPassword(String password, byte[] salt){
+    public static byte[] hashPassword(char[] password, byte[] salt){
         try {
-            PBEKeySpec keySpec = new PBEKeySpec(password.toCharArray(), salt, 32767, 256);
+            PBEKeySpec keySpec = new PBEKeySpec(password, salt, 32767, 256);
             SecretKeyFactory factory = SecretKeyFactory.getInstance(KEY_GENERATION_ALGORITHM);
             return factory.generateSecret(keySpec).getEncoded();
         } catch (Exception e) {

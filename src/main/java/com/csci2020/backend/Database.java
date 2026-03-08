@@ -7,9 +7,6 @@ import org.hibernate.Transaction;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 
-import javax.security.auth.login.AccountException;
-import javax.security.auth.login.AccountNotFoundException;
-import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,26 +19,23 @@ import java.util.regex.Pattern;
  * Data Access Object used to control the database.
  */
 public class Database {
-    private static Account currentUser;
-    private static final Logger logger = Logging.createLogger("Database", Path.of(".","latest.log"));
+    private Account currentUser;
+    private final Logger logger = Logging.createLogger("Database", Path.of(".","latest.log"));
     private static final String QUERY_ERROR_MESSAGE = "Failed to create query: ",
         TRANSACTION_ERROR_MESSAGE = "Failed to commit transaction: ";
     private static SessionFactory factory = null;
-    public static Session getSession(){
-        return getFactory().openSession();
-    }
-
+    private final Path filepath;
     /**
      * Constructs or returns a singleton {@link SessionFactory} used to access the database.
      * This method should likely not be called outside this class, but is available for any custom queries needed.
      * @return {@link SessionFactory} singleton
      */
-    public static SessionFactory getFactory(){
+    public SessionFactory getFactory(){
         if(factory == null){
             Configuration conf = new Configuration();
             Properties settings = new Properties();
             settings.put("hibernate.connection.driver_class", "org.h2.Driver");
-            settings.put("hibernate.connection.url","jdbc:h2:file:./test.h2");
+            settings.put("hibernate.connection.url","jdbc:h2:file:" + filepath.toString());
             settings.put("hibernate.connection.username", "sa");
             settings.put("hibernate.connection.password","");
             settings.put("hibernate.show_sql", "false");
@@ -53,6 +47,10 @@ public class Database {
             factory = conf.buildSessionFactory(new StandardServiceRegistryBuilder().applySettings(conf.getProperties()).build());
         }
         return factory;
+    }
+
+    public Database(Path filepath){
+        this.filepath = filepath;
     }
 
     /**
@@ -381,17 +379,25 @@ public class Database {
             throw e;
         }
     }
-    public Account createNewAccount(String firstName, String lastName, String password){
-        Database db = new Database();
-        String targetName = firstName + "." + lastName;
-        long identifier = db.getUniqueIdentifierFromUsername(targetName);
-        String username = targetName + (identifier == 1 ? "" : identifier);
+    public boolean isUsernameTaken(String username){
+        try(Session session = getFactory().openSession()) {
+            return session.createQuery("FROM Account WHERE username = :username", Account.class)
+                    .setParameter("username", username).getResultCount() != 0;
+        } catch(NoResultException e){
+            logger.log(Level.SEVERE, QUERY_ERROR_MESSAGE + e.getMessage(), e);
+            throw e;
+        }
+    }
+    public AuthenticationResult createNewAccount(String username, String firstName, String lastName, char[] password){
+        if(isUsernameTaken(username)){
+            return new AuthenticationResult(AuthenticationResult.AUTHENTICATION_STATUS.INVALID_CREDENTIALS, "Username taken");
+        }
         logger.log(Level.FINE, String.format("Trying to create account of username %s", username));
         Player player = new Player(firstName, lastName);
         byte[] salt = Authentication.generateSalt();
         Account acc = new Account(username, player, salt, Authentication.hashPassword(password, salt), false);
-        db.saveAccount(acc);
-        return acc;
+        this.saveAccount(acc);
+        return new AuthenticationResult(AuthenticationResult.AUTHENTICATION_STATUS.SUCCESS, "Created account");
     }
 
     /**
@@ -401,34 +407,38 @@ public class Database {
      * @param password
      * @return
      */
-    public boolean login(String username, String password){
+    public AuthenticationResult login(String username, char[] password){
         //TODO remove all mentions of password in output, this is just for debugging
-        logger.log(Level.FINE, String.format("Retrieving account with username=%s, password=%s", username, "*".repeat(password.length())));
+        logger.log(Level.FINE, String.format("Retrieving account with username=%s, password=%s", username, "*".repeat(password.length)));
 
         try(Session session = getFactory().openSession()) {
             Account acc = session.createQuery("FROM Account WHERE username = :username", Account.class)
                     .setParameter("username", username)
                     .getSingleResultOrNull();
             if(acc == null){
+                // Account with the given username doesn't exist
                 logger.log(Level.INFO, "Failed to find account with provided credentials");
-                return false;
+                Arrays.fill(password, '0');
+                return new AuthenticationResult(AuthenticationResult.AUTHENTICATION_STATUS.INVALID_CREDENTIALS, "Invalid username or password");
             }
             byte[] challenge = Authentication.generateChallenge();
             byte[] userHash = Authentication.hashPassword(password, acc.getSalt());
             byte[] userHmac = Authentication.HMAC(userHash, challenge);
             byte[] serverHmac = Authentication.HMAC(acc.getPasswordHash(), challenge);
             if(Authentication.challengeResult(userHmac, serverHmac)){
+                // Successful login
                 currentUser = acc;
                 logger.log(Level.INFO, "Successfully logged in");
-                return true;
+                return new AuthenticationResult(AuthenticationResult.AUTHENTICATION_STATUS.SUCCESS, "Successfully logged in");
             } else {
+                // Invalid password
                 logger.log(Level.INFO, "Failed to find account with provided credentials");
-                return false;
+                return new AuthenticationResult(AuthenticationResult.AUTHENTICATION_STATUS.INVALID_CREDENTIALS, "Invalid username or password");
             }
         } catch(Exception e){
             logger.log(Level.SEVERE, QUERY_ERROR_MESSAGE + e.getMessage(), e);
+            return new AuthenticationResult(AuthenticationResult.AUTHENTICATION_STATUS.ERROR, e.getMessage());
         }
-        return false;
     }
 
     public void logout(){
@@ -445,17 +455,16 @@ public class Database {
         }
     }
 
-    public Account createAdminAccount(String firstName, String lastName, String password){
+    public Account createAdminAccount(String firstName, String lastName, char[] password){
         if(currentUser != null && currentUser.isAdmin() || isNewDatabase()){
-            Database db = new Database();
             String targetName = firstName + "." + lastName;
-            long identifier = db.getUniqueIdentifierFromUsername(targetName);
+            long identifier = this.getUniqueIdentifierFromUsername(targetName);
             String username = targetName + (identifier == 1 ? "" : identifier);
             logger.log(Level.FINE, String.format("Trying to create admin account of username %s", username));
             Player player = new Player(firstName, lastName);
             byte[] salt = Authentication.generateSalt();
             Account acc = new Account(username, player, salt, Authentication.hashPassword(password, salt), true);
-            db.saveAccount(acc);
+            this.saveAccount(acc);
             return acc;
         }
         return null;
