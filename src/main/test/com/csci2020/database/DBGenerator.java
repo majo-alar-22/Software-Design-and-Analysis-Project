@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class DBGenerator {
     public static final String[] firstNames = {
@@ -47,33 +48,43 @@ public class DBGenerator {
             "Savage Eagles", "Thunder Tigers", "Crimson Panthers", "Obsidian Wolves", "Mystic Wolves"
     };
     //Names above were generated with AI
+    static Logger logger = Logging.createLogger("DBGenerator", Path.of(".","generator.log"));
     static Database db = new Database(Path.of(".","database"));
     public static void main(String[] args){
         List<String> remainingTeamNames = new ArrayList<>(List.of(teamNames));
         List<Team> teams = new ArrayList<>();
         List<Player> players = new ArrayList<>();
         List<Account> accounts = new ArrayList<>();
-
-
+        if(db.isNewDatabase()) {
+            AuthenticationResult result = db.createAdminAccount("Admin", "Account", "password".toCharArray());
+            System.out.println(result.message());
+        }
+        AuthenticationResult loginResult = db.login("Admin.Account", "password".toCharArray());
+        System.out.println(loginResult.message());
         for(int i = 0; i < 10; i++){
             String teamName = randomItemFromList(remainingTeamNames);
             Team t = new Team(teamName);
             remainingTeamNames.remove(teamName);
             teams.add(t);
         }
+
         for(int i = 0; i < 1000; i++){
             Team team = randomItemFromList(teams);
             String firstName = randomItemFromArray(firstNames);
             String lastName = randomItemFromArray(lastNames);
             //TODO not this
             String password = firstName + lastName;
-            Account acc = db.createNewAccount(firstName, lastName, password.toCharArray());
-            accounts.add(acc);
-            Player p = acc.getPlayer();
-            team.addPlayerToRoster(p);
-            players.add(p);
+            String targetName = firstName + "." + lastName;
+            AuthenticationResult result = db.createNewAccount(targetName, firstName, lastName, password.toCharArray());
+            if(result.status() == AuthenticationResult.AUTHENTICATION_STATUS.SUCCESS){
+                Player p = db.getPlayerByUsername(targetName);
+                team.addPlayerToRoster(p);
+                players.add(p);
+            } else {
+                logger.log(Level.SEVERE, "Failed to create account: " + result.message());
+            }
         }
-        Account admin = db.createAdminAccount("Admin", "Account", "password".toCharArray());
+
         db.saveTeams(teams);
         db.savePlayers(players);
         for(Team t : db.getAllTeams()){

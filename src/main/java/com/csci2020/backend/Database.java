@@ -455,7 +455,7 @@ public class Database {
         }
     }
 
-    public Account createAdminAccount(String firstName, String lastName, char[] password){
+    public AuthenticationResult createAdminAccount(String firstName, String lastName, char[] password){
         if(currentUser != null && currentUser.isAdmin() || isNewDatabase()){
             String targetName = firstName + "." + lastName;
             long identifier = this.getUniqueIdentifierFromUsername(targetName);
@@ -465,7 +465,29 @@ public class Database {
             byte[] salt = Authentication.generateSalt();
             Account acc = new Account(username, player, salt, Authentication.hashPassword(password, salt), true);
             this.saveAccount(acc);
-            return acc;
+            return new AuthenticationResult(AuthenticationResult.AUTHENTICATION_STATUS.SUCCESS, "Created admin account \"" + username + "\"");
+        }
+        return new AuthenticationResult(AuthenticationResult.AUTHENTICATION_STATUS.INSUFFICIENT_PERMISSIONS, "Insufficient permissions");
+    }
+
+    public Account getCurrentUser(){
+        return this.currentUser;
+    }
+
+    public Player getPlayerByUsername(String username) {
+        //TODO remove all mentions of password in output, this is just for debugging
+        logger.log(Level.FINE, String.format("Retrieving account with username=%s", username));
+
+        try(Session session = getFactory().openSession()) {
+            Account acc = session.createQuery("FROM Account WHERE username = :username", Account.class)
+                    .setParameter("username", username)
+                    .getSingleResultOrNull();
+            if(acc != null){
+                return acc.getPlayer();
+            }
+            logger.log(Level.FINE, "Failed to find account with given username");
+        } catch(Exception e){
+            logger.log(Level.SEVERE, QUERY_ERROR_MESSAGE + e.getMessage(), e);
         }
         return null;
     }
