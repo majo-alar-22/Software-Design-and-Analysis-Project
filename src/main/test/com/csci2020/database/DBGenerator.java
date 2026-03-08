@@ -47,13 +47,13 @@ public class DBGenerator {
             "Savage Eagles", "Thunder Tigers", "Crimson Panthers", "Obsidian Wolves", "Mystic Wolves"
     };
     //Names above were generated with AI
-
+    static Database db = new Database(Path.of(".","database"));
     public static void main(String[] args){
         List<String> remainingTeamNames = new ArrayList<>(List.of(teamNames));
         List<Team> teams = new ArrayList<>();
         List<Player> players = new ArrayList<>();
         List<Account> accounts = new ArrayList<>();
-        Database db = new Database();
+
 
         for(int i = 0; i < 10; i++){
             String teamName = randomItemFromList(remainingTeamNames);
@@ -67,13 +67,13 @@ public class DBGenerator {
             String lastName = randomItemFromArray(lastNames);
             //TODO not this
             String password = firstName + lastName;
-            Account acc = db.createNewAccount(firstName, lastName, password);
+            Account acc = db.createNewAccount(firstName, lastName, password.toCharArray());
             accounts.add(acc);
             Player p = acc.getPlayer();
             team.addPlayerToRoster(p);
             players.add(p);
         }
-        Account admin = db.createAdminAccount("Admin", "Account", "password");
+        Account admin = db.createAdminAccount("Admin", "Account", "password".toCharArray());
         db.saveTeams(teams);
         db.savePlayers(players);
         for(Team t : db.getAllTeams()){
@@ -87,7 +87,7 @@ public class DBGenerator {
             }
         }
 
-        db.login("Admin.Account", "password");
+        db.login("Admin.Account", "password".toCharArray());
 
 //        Arrays.stream(Player.class.getDeclaredFields()).forEach(field -> {
 //            try {
@@ -106,15 +106,15 @@ public class DBGenerator {
 //                throw new RuntimeException(e);
 //            }
 //        });
-        testLogger();
+//        testLogger();
     }
 
     public static void testLogger(){
-//        try{
-//            throw new Exception("This is an exception!");
-//        } catch (Exception e){
-//            Logging.createLogger("DBGenerator", Path.of(".","generator.log")).log(Level.SEVERE, "Failed to perform some operation", e);
-//        }
+        try{
+            throw new Exception("This is an exception!");
+        } catch (Exception e){
+            Logging.createLogger("DBGenerator", Path.of(".","generator.log")).log(Level.SEVERE, "Failed to perform some operation", e);
+        }
     }
     public static <T> T randomItemFromArray(T[] array){
         int index = (int) Math.floor(Math.random()*array.length);
