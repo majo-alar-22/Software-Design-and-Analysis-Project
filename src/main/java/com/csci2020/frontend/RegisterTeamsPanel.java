@@ -43,23 +43,24 @@ public class RegisterTeamsPanel extends JPanel {
     // Arranges and initializes UI elements when called in the RegisterTeamsPanel() constructor
     private void initUI() {
         this.setLayout(new GridBagLayout());
-        this.setBackground(new Color(235, 242, 250));
+        this.setBackground(Theme.getActiveTheme().getBackgroundPrimary());
 
         JPanel cardPanel = new JPanel(new BorderLayout(10, 10));
         cardPanel.setPreferredSize(new Dimension(520, 420));
-        cardPanel.setBackground(Color.WHITE);
+        cardPanel.setBackground(Theme.getActiveTheme().getBackgroundSecondary());
         cardPanel.setBorder(new EmptyBorder(20, 25, 20, 25));
 
         JLabel titleLabel = new JLabel("Soccer League Team Registry", SwingConstants.CENTER);
         titleLabel.setFont(new Font("SansSerif", Font.BOLD, 24));
+        titleLabel.setForeground(Theme.getActiveTheme().getForegroundPrimary());
 
         JPanel headerPanel = new JPanel(new GridLayout(2, 1, 0, 5));
-        headerPanel.setBackground(Color.WHITE);
+        headerPanel.setBackground(Theme.getActiveTheme().getBackgroundSecondary());
         headerPanel.add(titleLabel);
 
 
         JPanel formPanel = new JPanel(new GridBagLayout());
-        formPanel.setBackground(Color.WHITE);
+        formPanel.setBackground(Theme.getActiveTheme().getBackgroundSecondary());
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(8, 8, 8, 8);
@@ -67,29 +68,27 @@ public class RegisterTeamsPanel extends JPanel {
 
         gbc.gridx = 0;
         gbc.gridy = 0;
-        formPanel.add(new JLabel("First Name:"), gbc);
-
+        gbc.weightx = 0;
+        String[] labels = {"First Name:", "Last Name::", "Position:", "Team Name:"};
+        for(String label : labels){
+            JLabel jlabel = new JLabel(label);
+            jlabel.setForeground(Theme.getActiveTheme().getForegroundPrimary());
+            formPanel.add(jlabel, gbc);
+            gbc.gridy++;
+        }
+        gbc.weightx = 1;
+        gbc.gridy = 0;
         gbc.gridx = 1;
+        firstNameField.setBorder(BorderFactory.createLineBorder(Theme.getActiveTheme().getAccentSecondary()));
         formPanel.add(firstNameField, gbc);
-
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        formPanel.add(new JLabel("Last Name:"), gbc);
-
-        gbc.gridx = 1;
+        gbc.gridy++;
+        lastNameField.setBorder(BorderFactory.createLineBorder(Theme.getActiveTheme().getAccentSecondary()));
         formPanel.add(lastNameField, gbc);
-
-        gbc.gridx = 0;
-        gbc.gridy = 2;
-        formPanel.add(new JLabel("Position:"), gbc);
-
-        gbc.gridx = 1;
+        gbc.gridy++;
+        positionField.setBorder(BorderFactory.createLineBorder(Theme.getActiveTheme().getAccentSecondary()));
         formPanel.add(positionField, gbc);
-
-        gbc.gridx = 0;
-        gbc.gridy = 3;
-        formPanel.add(new JLabel("Team Name:"), gbc);
-        gbc.gridx = 1;
+        gbc.gridy++;
+        teamNameField.setBorder(BorderFactory.createLineBorder(Theme.getActiveTheme().getAccentSecondary()));
         formPanel.add(teamNameField, gbc);
 
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 5));
@@ -97,7 +96,8 @@ public class RegisterTeamsPanel extends JPanel {
 
         addPlayerButton.setPreferredSize(new Dimension(110, 35));
         saveButton.setPreferredSize(new Dimension(110, 35));
-
+        addPlayerButton.setBackground(Theme.getActiveTheme().getBackgroundTertiary());
+        saveButton.setBackground(Theme.getActiveTheme().getBackgroundTertiary());
         buttonPanel.add(addPlayerButton);
         buttonPanel.add(saveButton);
 

@@ -42,27 +42,28 @@ public class LoginPanel extends JPanel {
     // Arranges and initializes UI elements when called in the LoginPanel() constructor
     private void initUI() {
         this.setLayout(new GridBagLayout());
-        this.setBackground(new Color(235, 242, 250));
+        this.setBackground(Theme.getActiveTheme().getBackgroundPrimary());
 
         JPanel cardPanel = new JPanel(new BorderLayout(10, 10));
         cardPanel.setPreferredSize(new Dimension(420, 320));
-        cardPanel.setBackground(Color.WHITE);
+        cardPanel.setBackground(Theme.getActiveTheme().getBackgroundSecondary());
         cardPanel.setBorder(new EmptyBorder(20, 25, 20, 25));
 
         JLabel titleLabel = new JLabel("Soccer League Login", SwingConstants.CENTER);
         titleLabel.setFont(new Font("SansSerif", Font.BOLD, 24));
+        titleLabel.setForeground(Theme.getActiveTheme().getForegroundPrimary());
 
         JLabel subtitleLabel = new JLabel("Login or create a new account", SwingConstants.CENTER);
         subtitleLabel.setFont(new Font("SansSerif", Font.PLAIN, 14));
-        subtitleLabel.setForeground(Color.DARK_GRAY);
+        subtitleLabel.setForeground(Theme.getActiveTheme().getForegroundSecondary());
 
         JPanel headerPanel = new JPanel(new GridLayout(2, 1, 0, 5));
-        headerPanel.setBackground(Color.WHITE);
+        headerPanel.setBackground(Theme.getActiveTheme().getBackgroundSecondary());
         headerPanel.add(titleLabel);
         headerPanel.add(subtitleLabel);
 
         JPanel formPanel = new JPanel(new GridBagLayout());
-        formPanel.setBackground(Color.WHITE);
+        formPanel.setBackground(Theme.getActiveTheme().getBackgroundSecondary());
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(8, 8, 8, 8);
@@ -73,26 +74,33 @@ public class LoginPanel extends JPanel {
         gbc.weightx = 0;
         String[] labels = {"Username:", "Password:", "First Name:", "Last Name"};
         for(String label : labels){
-            formPanel.add(new JLabel(label), gbc);
+            JLabel jlabel = new JLabel(label);
+            jlabel.setForeground(Theme.getActiveTheme().getForegroundPrimary());
+            formPanel.add(jlabel, gbc);
             gbc.gridy++;
         }
         gbc.weightx = 1;
         gbc.gridy = 0;
         gbc.gridx = 1;
+        usernameField.setBorder(BorderFactory.createLineBorder(Theme.getActiveTheme().getAccentSecondary()));
         formPanel.add(usernameField, gbc);
         gbc.gridy++;
+        passwordField.setBorder(BorderFactory.createLineBorder(Theme.getActiveTheme().getAccentSecondary()));
         formPanel.add(passwordField, gbc);
         gbc.gridy++;
+        firstNameField.setBorder(BorderFactory.createLineBorder(Theme.getActiveTheme().getAccentSecondary()));
         formPanel.add(firstNameField, gbc);
         gbc.gridy++;
+        lastNameField.setBorder(BorderFactory.createLineBorder(Theme.getActiveTheme().getAccentSecondary()));
         formPanel.add(lastNameField, gbc);
 
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 5));
-        buttonPanel.setBackground(Color.WHITE);
+        buttonPanel.setBackground(Theme.getActiveTheme().getBackgroundSecondary());
 
         loginButton.setPreferredSize(new Dimension(110, 35));
         registerButton.setPreferredSize(new Dimension(110, 35));
-
+        loginButton.setBackground(Theme.getActiveTheme().getBackgroundTertiary());
+        registerButton.setBackground(Theme.getActiveTheme().getBackgroundTertiary());
         buttonPanel.add(loginButton);
         buttonPanel.add(registerButton);
 
