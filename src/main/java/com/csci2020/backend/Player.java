@@ -12,7 +12,8 @@ public class Player {
     public enum POSITION{
         GOALKEEPER(1),
         FORWARD(2),
-        DEFENDER(3);
+        DEFENDER(3),
+        MIDFIELDER(4);
         public final int value;
         POSITION(int i) {
             this.value = i;
