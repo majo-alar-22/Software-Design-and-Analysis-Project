@@ -70,30 +70,21 @@ public class LoginPanel extends JPanel {
 
         gbc.gridx = 0;
         gbc.gridy = 0;
-        formPanel.add(new JLabel("Username:"), gbc);
-
+        gbc.weightx = 0;
+        String[] labels = {"Username:", "Password:", "First Name:", "Last Name"};
+        for(String label : labels){
+            formPanel.add(new JLabel(label), gbc);
+            gbc.gridy++;
+        }
+        gbc.weightx = 1;
+        gbc.gridy = 0;
         gbc.gridx = 1;
         formPanel.add(usernameField, gbc);
-
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        formPanel.add(new JLabel("Password:"), gbc);
-
-        gbc.gridx = 1;
+        gbc.gridy++;
         formPanel.add(passwordField, gbc);
-
-        gbc.gridx = 0;
-        gbc.gridy = 2;
-        formPanel.add(new JLabel("First Name:"), gbc);
-
-        gbc.gridx = 1;
+        gbc.gridy++;
         formPanel.add(firstNameField, gbc);
-
-        gbc.gridx = 0;
-        gbc.gridy = 3;
-        formPanel.add(new JLabel("Last Name:"), gbc);
-
-        gbc.gridx = 1;
+        gbc.gridy++;
         formPanel.add(lastNameField, gbc);
 
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 5));
