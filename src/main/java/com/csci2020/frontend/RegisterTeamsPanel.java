@@ -18,8 +18,7 @@ public class RegisterTeamsPanel extends JPanel {
     private final JTextField positionField;
     private final JTextField teamNameField;
     private final JButton addPlayerButton;
-    private final JButton saveButton;
-
+    private final JButton viewTeamButton;
 
     /** Constructor for the login panel
      * @param db: Instance of a Database object, controls access to the database
@@ -33,8 +32,8 @@ public class RegisterTeamsPanel extends JPanel {
         this.lastNameField = new JTextField(15);
         this.positionField = new JTextField(15);
         this.teamNameField = new JTextField(15);
-        this.addPlayerButton = new JButton("Add New Player");
-        this.saveButton = new JButton("Save Changes");
+        this.addPlayerButton = new JButton("Add Player");
+        this.viewTeamButton = new JButton("View Team");
 
         initUI();
         initHandler();
@@ -95,11 +94,11 @@ public class RegisterTeamsPanel extends JPanel {
         buttonPanel.setBackground(Color.WHITE);
 
         addPlayerButton.setPreferredSize(new Dimension(210, 35));
-        saveButton.setPreferredSize(new Dimension(210, 35));
+        viewTeamButton.setPreferredSize(new Dimension(210, 35));
         addPlayerButton.setBackground(Theme.getActiveTheme().getBackgroundTertiary());
-        saveButton.setBackground(Theme.getActiveTheme().getBackgroundTertiary());
+        viewTeamButton.setBackground(Theme.getActiveTheme().getBackgroundTertiary());
         buttonPanel.add(addPlayerButton);
-        buttonPanel.add(saveButton);
+        buttonPanel.add(viewTeamButton);
 
         cardPanel.add(headerPanel, BorderLayout.NORTH);
         cardPanel.add(formPanel, BorderLayout.CENTER);
@@ -137,14 +136,8 @@ public class RegisterTeamsPanel extends JPanel {
             }
         });
 
-        saveButton.addActionListener((event) -> {
-            try {
-                Team team = new Team(teamNameField.getText().trim());
-                db.saveTeam(team);
-                JOptionPane.showMessageDialog(this, "Team saved successfully.");
-            } catch (Exception e) {
-                JOptionPane.showMessageDialog(this, "Failed to save team.");
-            }
+        viewTeamButton.addActionListener((event) -> {
+            window.showLoggedInUserTeamRoster();
         });
     }
 }
