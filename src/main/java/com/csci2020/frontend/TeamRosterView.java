@@ -5,7 +5,9 @@ import com.csci2020.backend.Player;
 import com.csci2020.backend.Team;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.JTableHeader;
 import java.awt.*;
 
 public class TeamRosterView extends JPanel {
@@ -14,37 +16,63 @@ public class TeamRosterView extends JPanel {
     private final TeamRosterTableModel tableModel;
     private final JLabel teamNameLabel;
     private final Database db;
+
     private static final String[] HEADERS = {"ID", "First Name", "Last Name"};
-    public TeamRosterView(Database db, Team team){
-        this.tableModel = new TeamRosterTableModel(team);
+
+    public TeamRosterView(Database db, Team team) {
         this.db = db;
+        this.tableModel = new TeamRosterTableModel(team);
         this.roster = new JTable(tableModel);
         this.rosterScroller = new JScrollPane(roster);
         this.teamNameLabel = new JLabel(team.getName());
+
         init();
     }
-    private void init(){
+
+    private void init() {
         this.setLayout(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.fill = GridBagConstraints.BOTH;
-        gbc.anchor = GridBagConstraints.CENTER;
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.weightx = 1.0;
-        gbc.weighty = 0.0;
-        teamNameLabel.setHorizontalAlignment(JLabel.CENTER);
-        teamNameLabel.setVerticalAlignment(JLabel.BOTTOM);
-        teamNameLabel.setFont(teamNameLabel.getFont().deriveFont(20.0F));
-        this.add(teamNameLabel, gbc);
-        gbc.gridy++;
-        gbc.weighty = 1.0;
-        this.add(rosterScroller,gbc);
+        this.setBackground(new Color(235, 242, 250));
+
+        JPanel cardPanel = new JPanel(new BorderLayout(10, 10));
+        cardPanel.setPreferredSize(new Dimension(700, 450));
+        cardPanel.setBackground(Color.WHITE);
+        cardPanel.setBorder(new EmptyBorder(20, 25, 20, 25));
+
+        teamNameLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        teamNameLabel.setFont(new Font("SansSerif", Font.BOLD, 24));
+
+        JLabel subtitleLabel = new JLabel("Team Roster", SwingConstants.CENTER);
+        subtitleLabel.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        subtitleLabel.setForeground(Color.DARK_GRAY);
+
+        JPanel headerPanel = new JPanel(new GridLayout(2, 1, 0, 5));
+        headerPanel.setBackground(Color.WHITE);
+        headerPanel.add(teamNameLabel);
+        headerPanel.add(subtitleLabel);
+
+        roster.setRowHeight(28);
+        roster.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        roster.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        roster.getTableHeader().setReorderingAllowed(false);
+
+        JTableHeader tableHeader = roster.getTableHeader();
+        tableHeader.setFont(new Font("SansSerif", Font.BOLD, 14));
+
+        rosterScroller.setBorder(BorderFactory.createLineBorder(new Color(200, 200, 200)));
+
+        cardPanel.add(headerPanel, BorderLayout.NORTH);
+        cardPanel.add(rosterScroller, BorderLayout.CENTER);
+
+        this.add(cardPanel);
     }
-    class TeamRosterTableModel extends AbstractTableModel{
+
+    class TeamRosterTableModel extends AbstractTableModel {
         private final Team team;
-        public TeamRosterTableModel(Team team){
+
+        public TeamRosterTableModel(Team team) {
             this.team = team;
         }
+
         @Override
         public int getColumnCount() {
             return HEADERS.length;
@@ -58,6 +86,7 @@ public class TeamRosterView extends JPanel {
         @Override
         public Object getValueAt(int row, int col) {
             Player player = team.getRoster().get(row);
+
             return switch (col) {
                 case 0 -> player.getID();
                 case 1 -> player.getFirstName();
@@ -74,7 +103,8 @@ public class TeamRosterView extends JPanel {
         @Override
         public void setValueAt(Object aValue, int row, int col) {
             Player p = team.getRoster().get(row);
-            switch(col){
+
+            switch (col) {
                 case 0:
                     throw new UnsupportedOperationException("Cannot change ID");
                 case 1:
@@ -86,6 +116,7 @@ public class TeamRosterView extends JPanel {
                 default:
                     break;
             }
+
             db.savePlayer(p);
             fireTableCellUpdated(row, col);
         }

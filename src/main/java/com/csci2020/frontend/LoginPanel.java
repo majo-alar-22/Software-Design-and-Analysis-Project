@@ -1,76 +1,134 @@
 package com.csci2020.frontend;
 
-import com.csci2020.backend.Authentication;
 import com.csci2020.backend.AuthenticationResult;
+import com.csci2020.backend.AuthenticationResult.AUTHENTICATION_STATUS;
 import com.csci2020.backend.Database;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
 public class LoginPanel extends JPanel {
-    private static final String[] LABELS = {
-            "Username",
-            "Password",
-            "First Name",
-            "Last Name"
-    };
-
     private final Database db;
+    private final Window window;
+
     private final JTextField usernameField;
     private final JPasswordField passwordField;
-    private final JButton loginButton;
-    private final JButton registerButton;
     private final JTextField firstNameField;
     private final JTextField lastNameField;
-    public LoginPanel(Database db){
+    private final JButton loginButton;
+    private final JButton registerButton;
+
+    public LoginPanel(Database db, Window window) {
         this.db = db;
-        this.usernameField = new JTextField();
-        this.passwordField = new JPasswordField();
-        this.firstNameField = new JTextField();
-        this.lastNameField = new JTextField();
+        this.window = window;
+
+        this.usernameField = new JTextField(15);
+        this.passwordField = new JPasswordField(15);
+        this.firstNameField = new JTextField(15);
+        this.lastNameField = new JTextField(15);
         this.loginButton = new JButton("Login");
         this.registerButton = new JButton("Register");
+
         initUI();
         initHandler();
     }
-    public void initUI(){
+
+    private void initUI() {
         this.setLayout(new GridBagLayout());
+        this.setBackground(new Color(235, 242, 250));
+
+        JPanel cardPanel = new JPanel(new BorderLayout(10, 10));
+        cardPanel.setPreferredSize(new Dimension(420, 320));
+        cardPanel.setBackground(Color.WHITE);
+        cardPanel.setBorder(new EmptyBorder(20, 25, 20, 25));
+
+        JLabel titleLabel = new JLabel("Soccer League Login", SwingConstants.CENTER);
+        titleLabel.setFont(new Font("SansSerif", Font.BOLD, 24));
+
+        JLabel subtitleLabel = new JLabel("Login or create a new account", SwingConstants.CENTER);
+        subtitleLabel.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        subtitleLabel.setForeground(Color.DARK_GRAY);
+
+        JPanel headerPanel = new JPanel(new GridLayout(2, 1, 0, 5));
+        headerPanel.setBackground(Color.WHITE);
+        headerPanel.add(titleLabel);
+        headerPanel.add(subtitleLabel);
+
+        JPanel formPanel = new JPanel(new GridBagLayout());
+        formPanel.setBackground(Color.WHITE);
+
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.ipadx = 5;
-        gbc.ipady = 5;
-        gbc.anchor = GridBagConstraints.LINE_END;
-        for(String label : LABELS){
-            this.add(new JLabel(label), gbc);
-            gbc.gridy++;
-        }
-        gbc.gridy = 0;
-        gbc.gridx = 1;
-        gbc.fill = GridBagConstraints.BOTH;
-        this.add(usernameField, gbc);
-        gbc.gridy++;
-        this.add(passwordField, gbc);
-        gbc.gridy++;
-        this.add(firstNameField, gbc);
-        gbc.gridy++;
-        this.add(lastNameField, gbc);
+        gbc.insets = new Insets(8, 8, 8, 8);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
 
         gbc.gridx = 0;
-        gbc.gridy++;
-        this.add(loginButton, gbc);
-        gbc.gridx++;
-        this.add(registerButton, gbc);
+        gbc.gridy = 0;
+        formPanel.add(new JLabel("Username:"), gbc);
+
+        gbc.gridx = 1;
+        formPanel.add(usernameField, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        formPanel.add(new JLabel("Password:"), gbc);
+
+        gbc.gridx = 1;
+        formPanel.add(passwordField, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        formPanel.add(new JLabel("First Name:"), gbc);
+
+        gbc.gridx = 1;
+        formPanel.add(firstNameField, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 3;
+        formPanel.add(new JLabel("Last Name:"), gbc);
+
+        gbc.gridx = 1;
+        formPanel.add(lastNameField, gbc);
+
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 5));
+        buttonPanel.setBackground(Color.WHITE);
+
+        loginButton.setPreferredSize(new Dimension(110, 35));
+        registerButton.setPreferredSize(new Dimension(110, 35));
+
+        buttonPanel.add(loginButton);
+        buttonPanel.add(registerButton);
+
+        cardPanel.add(headerPanel, BorderLayout.NORTH);
+        cardPanel.add(formPanel, BorderLayout.CENTER);
+        cardPanel.add(buttonPanel, BorderLayout.SOUTH);
+
+        this.add(cardPanel);
     }
 
-    public void initHandler(){
-        loginButton.addActionListener((event)->{
-            AuthenticationResult result = db.login(usernameField.getText(), passwordField.getPassword());
-            System.out.println(result.message());
+    private void initHandler() {
+        loginButton.addActionListener((event) -> {
+            AuthenticationResult result = db.login(
+                    usernameField.getText().trim(),
+                    passwordField.getPassword()
+            );
+
+            JOptionPane.showMessageDialog(this, result.message());
+
+            if (result.status() == AUTHENTICATION_STATUS.SUCCESS) {
+                window.showLoggedInUserTeamRoster();
+            }
         });
-        registerButton.addActionListener((event)->{
-            AuthenticationResult result = db.createNewAccount(usernameField.getText(), firstNameField.getText(), lastNameField.getText(), passwordField.getPassword());
-            System.out.println(result.message());
+
+        registerButton.addActionListener((event) -> {
+            AuthenticationResult result = db.createNewAccount(
+                    usernameField.getText().trim(),
+                    firstNameField.getText().trim(),
+                    lastNameField.getText().trim(),
+                    passwordField.getPassword()
+            );
+
+            JOptionPane.showMessageDialog(this, result.message());
         });
     }
 }
