@@ -94,8 +94,8 @@ public class RegisterTeamsPanel extends JPanel {
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 5));
         buttonPanel.setBackground(Color.WHITE);
 
-        addPlayerButton.setPreferredSize(new Dimension(110, 35));
-        saveButton.setPreferredSize(new Dimension(110, 35));
+        addPlayerButton.setPreferredSize(new Dimension(210, 35));
+        saveButton.setPreferredSize(new Dimension(210, 35));
         addPlayerButton.setBackground(Theme.getActiveTheme().getBackgroundTertiary());
         saveButton.setBackground(Theme.getActiveTheme().getBackgroundTertiary());
         buttonPanel.add(addPlayerButton);
