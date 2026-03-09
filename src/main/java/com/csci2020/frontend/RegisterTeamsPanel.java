@@ -69,7 +69,7 @@ public class RegisterTeamsPanel extends JPanel {
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.weightx = 0;
-        String[] labels = {"First Name:", "Last Name::", "Position:", "Team Name:"};
+        String[] labels = {"First Name:", "Last Name:", "Position:", "Team Name:"};
         for(String label : labels){
             JLabel jlabel = new JLabel(label);
             jlabel.setForeground(Theme.getActiveTheme().getForegroundPrimary());
@@ -134,6 +134,7 @@ public class RegisterTeamsPanel extends JPanel {
                 JOptionPane.showMessageDialog(this, "Invalid position. Use Goalkeeper, Forward, Defender, or Midfielder.");
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(this, "Failed to add player to team.");
+                e.printStackTrace();
             }
         });
 
