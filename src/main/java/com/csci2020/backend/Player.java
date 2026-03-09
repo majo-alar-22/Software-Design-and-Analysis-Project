@@ -254,6 +254,6 @@ public class Player {
      */
     @Override
     public String toString(){
-        return String.format("(%d: %s %s, %s)", ID, firstName, lastName, team.getName());
+        return String.format("(%d: %s %s, %s)", ID, firstName, lastName, team == null ? "No team" : team.getName());
     }
 }

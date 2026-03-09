@@ -13,7 +13,7 @@ public class RegisterTeamsPanel extends JPanel {
     private final Window window;
 
     // Declaration of Fields associated with the account registry
-    private final JTextField firstNameField;
+    private final JTextField usernameField;
     private final JTextField lastNameField;
     private final JTextField positionField;
     private final JTextField teamNameField;
@@ -29,7 +29,7 @@ public class RegisterTeamsPanel extends JPanel {
         this.db = db;
         this.window = window;
 
-        this.firstNameField = new JTextField(15);
+        this.usernameField = new JTextField(15);
         this.lastNameField = new JTextField(15);
         this.positionField = new JTextField(15);
         this.teamNameField = new JTextField(15);
@@ -69,7 +69,7 @@ public class RegisterTeamsPanel extends JPanel {
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.weightx = 0;
-        String[] labels = {"First Name:", "Last Name::", "Position:", "Team Name:"};
+        String[] labels = {"Username:", "Position:", "Team Name:"};
         for(String label : labels){
             JLabel jlabel = new JLabel(label);
             jlabel.setForeground(Theme.getActiveTheme().getForegroundPrimary());
@@ -79,12 +79,12 @@ public class RegisterTeamsPanel extends JPanel {
         gbc.weightx = 1;
         gbc.gridy = 0;
         gbc.gridx = 1;
-        firstNameField.setBorder(BorderFactory.createLineBorder(Theme.getActiveTheme().getAccentSecondary()));
-        formPanel.add(firstNameField, gbc);
+        usernameField.setBorder(BorderFactory.createLineBorder(Theme.getActiveTheme().getAccentSecondary()));
+        formPanel.add(usernameField, gbc);
         gbc.gridy++;
-        lastNameField.setBorder(BorderFactory.createLineBorder(Theme.getActiveTheme().getAccentSecondary()));
-        formPanel.add(lastNameField, gbc);
-        gbc.gridy++;
+//        lastNameField.setBorder(BorderFactory.createLineBorder(Theme.getActiveTheme().getAccentSecondary()));
+//        formPanel.add(lastNameField, gbc);
+//        gbc.gridy++;
         positionField.setBorder(BorderFactory.createLineBorder(Theme.getActiveTheme().getAccentSecondary()));
         formPanel.add(positionField, gbc);
         gbc.gridy++;
@@ -112,12 +112,12 @@ public class RegisterTeamsPanel extends JPanel {
     private void initHandler() {
         addPlayerButton.addActionListener((event) -> {
             try {
-                String firstName = firstNameField.getText().trim();
+                String firstName = usernameField.getText().trim();
                 String lastName = lastNameField.getText().trim();
                 String positionText = positionField.getText().trim().toUpperCase();
                 String teamName = teamNameField.getText().trim();
 
-                Player player = new Player(firstName, lastName);
+                Player player = db.getPlayerByUsername(firstName);
                 player.setPosition(Player.POSITION.valueOf(positionText));
 
                 Team team = db.getTeamByName(teamName);
@@ -127,7 +127,7 @@ public class RegisterTeamsPanel extends JPanel {
 
                 team.addPlayerToRoster(player);
                 db.saveTeam(team);
-
+                db.savePlayer(player);
                 JOptionPane.showMessageDialog(this, "Player added to team successfully.");
 
             } catch (IllegalArgumentException e) {
