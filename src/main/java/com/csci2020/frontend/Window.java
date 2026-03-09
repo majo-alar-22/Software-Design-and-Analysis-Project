@@ -30,6 +30,23 @@ public class Window extends JFrame {
             return;
         }
 
+        int adminChoice = JOptionPane.showConfirmDialog(
+                this,
+                "Are you an admin?",
+                "Admin Login",
+                JOptionPane.YES_NO_OPTION
+        );
+
+        if (adminChoice == JOptionPane.YES_OPTION) {
+            JOptionPane.showMessageDialog(this, "Admin access granted.");
+
+            this.setContentPane(new RegisterTeamsPanel(db, this));
+            this.revalidate();
+            this.repaint();
+
+            return;
+        }
+
         Player player = db.getCurrentUser().getPlayer();
 
         if (player == null) {
