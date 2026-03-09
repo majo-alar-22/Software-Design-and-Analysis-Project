@@ -165,9 +165,6 @@ public class Database {
             session.merge(team);
             transaction.commit();
         } catch(Exception e){
-            if(transaction != null){
-                transaction.rollback();
-            }
             logger.log(Level.SEVERE, TRANSACTION_ERROR_MESSAGE + e.getMessage(), e);
         }
     }
