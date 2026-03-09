@@ -12,6 +12,7 @@ public class LoginPanel extends JPanel {
     private final Database db;
     private final Window window;
 
+    // Declaration of Fields associated with the account registry
     private final JTextField usernameField;
     private final JPasswordField passwordField;
     private final JTextField firstNameField;
@@ -19,6 +20,10 @@ public class LoginPanel extends JPanel {
     private final JButton loginButton;
     private final JButton registerButton;
 
+    /** Constructor for the login panel
+     * @param db: Instance of a Database object, controls access to the database
+     * @param window: Window object used for the login panel
+     **/
     public LoginPanel(Database db, Window window) {
         this.db = db;
         this.window = window;
@@ -34,6 +39,7 @@ public class LoginPanel extends JPanel {
         initHandler();
     }
 
+    // Arranges and initializes UI elements when called in the LoginPanel() constructor
     private void initUI() {
         this.setLayout(new GridBagLayout());
         this.setBackground(new Color(235, 242, 250));
@@ -106,6 +112,7 @@ public class LoginPanel extends JPanel {
         this.add(cardPanel);
     }
 
+    // Helper function to listen for user actions when logging in
     private void initHandler() {
         loginButton.addActionListener((event) -> {
             AuthenticationResult result = db.login(

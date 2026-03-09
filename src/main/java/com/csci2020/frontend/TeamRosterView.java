@@ -19,6 +19,10 @@ public class TeamRosterView extends JPanel {
 
     private static final String[] HEADERS = {"ID", "First Name", "Last Name"};
 
+    /** Constructor for Team Roster component
+     * @param db: Instance of a Database object, controls access to the database
+     * @param team: Team which you are viewing the roster of
+     **/
     public TeamRosterView(Database db, Team team) {
         this.db = db;
         this.tableModel = new TeamRosterTableModel(team);
@@ -29,15 +33,18 @@ public class TeamRosterView extends JPanel {
         init();
     }
 
+    // Function organizing and initializing elements of the roster view
     private void init() {
         this.setLayout(new GridBagLayout());
         this.setBackground(new Color(235, 242, 250));
 
+        // Panel for roster or "card" panel of a team with size, color and border
         JPanel cardPanel = new JPanel(new BorderLayout(10, 10));
         cardPanel.setPreferredSize(new Dimension(700, 450));
         cardPanel.setBackground(Color.WHITE);
         cardPanel.setBorder(new EmptyBorder(20, 25, 20, 25));
 
+        // setts font and size for the label of the team name
         teamNameLabel.setHorizontalAlignment(SwingConstants.CENTER);
         teamNameLabel.setFont(new Font("SansSerif", Font.BOLD, 24));
 
@@ -45,11 +52,13 @@ public class TeamRosterView extends JPanel {
         subtitleLabel.setFont(new Font("SansSerif", Font.PLAIN, 14));
         subtitleLabel.setForeground(Color.DARK_GRAY);
 
+        // Panel for the header when viewing a team's roster
         JPanel headerPanel = new JPanel(new GridLayout(2, 1, 0, 5));
         headerPanel.setBackground(Color.WHITE);
         headerPanel.add(teamNameLabel);
         headerPanel.add(subtitleLabel);
 
+        // Organizing rows of the roster view, with row height, font, and size
         roster.setRowHeight(28);
         roster.setFont(new Font("SansSerif", Font.PLAIN, 14));
         roster.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -58,6 +67,7 @@ public class TeamRosterView extends JPanel {
         JTableHeader tableHeader = roster.getTableHeader();
         tableHeader.setFont(new Font("SansSerif", Font.BOLD, 14));
 
+        // Scroller for the roster view to see all players
         rosterScroller.setBorder(BorderFactory.createLineBorder(new Color(200, 200, 200)));
 
         cardPanel.add(headerPanel, BorderLayout.NORTH);
@@ -73,6 +83,7 @@ public class TeamRosterView extends JPanel {
             this.team = team;
         }
 
+        // Getters and setters below
         @Override
         public int getColumnCount() {
             return HEADERS.length;
