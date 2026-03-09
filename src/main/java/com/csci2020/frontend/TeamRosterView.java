@@ -63,11 +63,15 @@ public class TeamRosterView extends JPanel {
         roster.setFont(new Font("SansSerif", Font.PLAIN, 14));
         roster.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         roster.getTableHeader().setReorderingAllowed(false);
-        roster.setBackground(Theme.getActiveTheme().getBackgroundQuaternary());
+        roster.setBackground(Theme.getActiveTheme().getBackgroundSecondary());
         roster.setForeground(Theme.getActiveTheme().getForegroundPrimary());
+        roster.setSelectionBackground(Theme.getActiveTheme().getBackgroundPrimary());
+        roster.setSelectionForeground(Theme.getActiveTheme().getForegroundSecondary());
+
         JTableHeader tableHeader = roster.getTableHeader();
         tableHeader.setFont(new Font("SansSerif", Font.BOLD, 14));
         tableHeader.setBackground(Theme.getActiveTheme().getBackgroundTertiary());
+        tableHeader.setForeground(Theme.getActiveTheme().getForegroundPrimary());
         // Scroller for the roster view to see all players
         rosterScroller.setBorder(BorderFactory.createLineBorder(new Color(200, 200, 200)));
 
