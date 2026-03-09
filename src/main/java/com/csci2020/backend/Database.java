@@ -339,9 +339,9 @@ public class Database {
     }
 
     /**
-     * Saves a list of teams to the database. In the case of an error, transactions will not be committed.
-     * @see Database#saveTeam(Team)
-     * @param teams List of teams to save
+     * Saves a list of accounts to the database. In the case of an error, transactions will not be committed.
+     * @see Database#saveAccount(Account)
+     * @param accounts List of accounts to save
      */
     public void saveAccounts(List<Account> accounts) {
         if(accounts == null){
