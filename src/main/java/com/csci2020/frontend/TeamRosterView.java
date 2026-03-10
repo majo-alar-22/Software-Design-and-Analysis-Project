@@ -74,6 +74,18 @@ public class TeamRosterView extends JPanel {
         cardPanel.add(rosterScroller, BorderLayout.CENTER);
 
         this.add(cardPanel);
+
+        // Radio buttons to select theme page (to be completed later: Awrron)
+//        JRadioButton lightCLR = new JRadioButton("Light");
+//        JRadioButton darkCLR = new JRadioButton("Dark");
+//        JRadioButton dracCLR = new JRadioButton("Dracula");
+//        lightCLR.setBackground(Color.WHITE);
+//        darkCLR.setBackground(Color.WHITE);
+//        dracCLR.setBackground(Color.WHITE);
+//        lightCLR.setSelected(true);
+//        this.add(lightCLR);
+//        this.add(dracCLR, BorderLayout.CENTER);
+//        this.add(lightCLR, BorderLayout.SOUTH);
     }
 
     class TeamRosterTableModel extends AbstractTableModel {
