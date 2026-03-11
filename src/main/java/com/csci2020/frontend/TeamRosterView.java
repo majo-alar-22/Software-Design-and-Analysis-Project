@@ -16,6 +16,7 @@ public class TeamRosterView extends JPanel {
     private final TeamRosterTableModel tableModel;
     private final JLabel teamNameLabel;
     private final Database db;
+    private final JButton viewStandingsButton;
 
     private static final String[] HEADERS = {"ID", "First Name", "Last Name"};
 
@@ -29,8 +30,10 @@ public class TeamRosterView extends JPanel {
         this.roster = new JTable(tableModel);
         this.rosterScroller = new JScrollPane(roster);
         this.teamNameLabel = new JLabel(team.getName());
+        this.viewStandingsButton = new JButton("View Standings");
 
         init();
+        initHandler();
     }
 
     // Function organizing and initializing elements of the roster view
@@ -40,7 +43,7 @@ public class TeamRosterView extends JPanel {
 
         // Panel for roster or "card" panel of a team with size, color and border
         JPanel cardPanel = new JPanel(new BorderLayout(10, 10));
-        cardPanel.setPreferredSize(new Dimension(700, 450));
+        cardPanel.setPreferredSize(new Dimension(700, 520));
         cardPanel.setBackground(Theme.getActiveTheme().getBackgroundSecondary());
         cardPanel.setBorder(new EmptyBorder(20, 25, 20, 25));
 
@@ -48,6 +51,7 @@ public class TeamRosterView extends JPanel {
         teamNameLabel.setHorizontalAlignment(SwingConstants.CENTER);
         teamNameLabel.setFont(new Font("SansSerif", Font.BOLD, 24));
         teamNameLabel.setForeground(Theme.getActiveTheme().getForegroundPrimary());
+
         JLabel subtitleLabel = new JLabel("Team Roster", SwingConstants.CENTER);
         subtitleLabel.setFont(new Font("SansSerif", Font.PLAIN, 14));
         subtitleLabel.setForeground(Theme.getActiveTheme().getForegroundSecondary());
@@ -72,13 +76,33 @@ public class TeamRosterView extends JPanel {
         tableHeader.setFont(new Font("SansSerif", Font.BOLD, 14));
         tableHeader.setBackground(Theme.getActiveTheme().getBackgroundTertiary());
         tableHeader.setForeground(Theme.getActiveTheme().getForegroundPrimary());
+
         // Scroller for the roster view to see all players
         rosterScroller.setBorder(BorderFactory.createLineBorder(new Color(200, 200, 200)));
 
+        JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 5));
+        bottomPanel.setBackground(Theme.getActiveTheme().getBackgroundSecondary());
+
+        viewStandingsButton.setPreferredSize(new Dimension(180, 35));
+        viewStandingsButton.setBackground(Theme.getActiveTheme().getBackgroundTertiary());
+        viewStandingsButton.setForeground(Theme.getActiveTheme().getForegroundPrimary());
+
+        bottomPanel.add(viewStandingsButton);
+
         cardPanel.add(headerPanel, BorderLayout.NORTH);
         cardPanel.add(rosterScroller, BorderLayout.CENTER);
-        cardPanel.setBackground(Theme.getActiveTheme().getBackgroundSecondary());
+        cardPanel.add(bottomPanel, BorderLayout.SOUTH);
+
         this.add(cardPanel);
+    }
+
+    private void initHandler() {
+        viewStandingsButton.addActionListener((event) -> {
+            Window window = (Window) SwingUtilities.getWindowAncestor(this);
+            if (window != null) {
+                window.showStandingsView();
+            }
+        });
     }
 
     class TeamRosterTableModel extends AbstractTableModel {
