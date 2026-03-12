@@ -3,9 +3,7 @@ package com.csci2020.database;
 import com.csci2020.backend.*;
 
 import java.nio.file.Path;
-import java.security.SecureRandom;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -56,7 +54,7 @@ public class DBGenerator {
         List<Player> players = new ArrayList<>();
         List<Account> accounts = new ArrayList<>();
         if(db.isNewDatabase()) {
-            AuthenticationResult result = db.createAdminAccount("Admin", "Account", "password".toCharArray());
+            AuthenticationResult result = db.createNewAccount("Admin","Admin", "Account", "password".toCharArray());
             System.out.println(result.message());
         }
         AuthenticationResult loginResult = db.login("Admin.Account", "password".toCharArray());

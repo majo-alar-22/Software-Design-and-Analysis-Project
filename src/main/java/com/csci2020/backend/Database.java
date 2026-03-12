@@ -385,16 +385,25 @@ public class Database {
             throw e;
         }
     }
-    public AuthenticationResult createNewAccount(String username, String firstName, String lastName, char[] password){
+    public AuthenticationResult createNewAccount(String username, String firstName, String lastName, char[] password, boolean admin){
         if(isUsernameTaken(username)){
             return new AuthenticationResult(AuthenticationResult.AUTHENTICATION_STATUS.INVALID_CREDENTIALS, "Username taken");
         }
         logger.log(Level.FINE, String.format("Trying to create account of username %s", username));
         Player player = new Player(firstName, lastName);
         byte[] salt = Authentication.generateSalt();
+        boolean shouldBeAdmin = admin;
+        if(shouldBeAdmin){
+            if((currentUser == null || currentUser.isAdmin()) && !isNewDatabase()){
+                shouldBeAdmin = false;
+            }
+        }
         Account acc = new Account(username, player, salt, Authentication.hashPassword(password, salt), false);
         this.saveAccount(acc);
         return new AuthenticationResult(AuthenticationResult.AUTHENTICATION_STATUS.SUCCESS, "Created account");
+    }
+    public AuthenticationResult createNewAccount(String username, String firstName, String lastName, char[] password){
+        return createNewAccount(username, firstName, lastName, password, false);
     }
 
     /**

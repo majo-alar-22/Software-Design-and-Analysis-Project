@@ -1,23 +1,68 @@
 package com.csci2020.frontend;
 
+import com.csci2020.backend.AuthenticationResult;
 import com.csci2020.backend.Database;
 import com.csci2020.backend.Player;
 import com.csci2020.backend.Team;
 
 import javax.swing.*;
 
+import java.awt.event.ActionEvent;
+
+import static com.csci2020.backend.AuthenticationResult.AUTHENTICATION_STATUS;
+
 public class Window extends JFrame {
     private final Database db;
 
     public Window(Database db) {
         this.db = db;
-
         this.setTitle("CSCI2020 App");
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         this.setSize(1200, 800);
         this.setLocationRelativeTo(null);
+        showLoginPane();
+    }
 
-        this.setContentPane(new LoginPanel(db, this));
+
+    public void showLoginPane(){
+        NewLoginPanel panel = new NewLoginPanel();
+        panel.addLoginListener((username, password)->{
+            AuthenticationResult result = db.login(username, password);
+            panel.setMessage(result);
+            if(result.status() == AUTHENTICATION_STATUS.SUCCESS){
+                showLoggedInPane();
+            }
+        });
+        panel.addRegisterClickedListener(new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                showRegisterPane();
+            }
+        });
+        this.setContentPane(panel);
+        revalidate();
+        repaint();
+    }
+
+    public void showLoggedInPane(){
+        this.setContentPane(new TeamRosterView(db, db.getCurrentUser().getPlayer().getTeam()));
+    }
+
+    public void showRegisterPane(){
+        RegisterPanel panel = new RegisterPanel();
+        panel.addLoginListener(new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                showLoginPane();
+            }
+        });
+        panel.addRegisterClickedListener((username, password, firstName, lastName) -> {
+            AuthenticationResult result = db.createNewAccount(username, firstName, lastName, password);
+            panel.setMessage(result);
+        });
+        this.setContentPane(panel);
+        revalidate();
+        repaint();
     }
 
     public void showLoggedInUserTeamRoster() {

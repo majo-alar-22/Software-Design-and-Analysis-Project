@@ -13,6 +13,7 @@ public class Theme {
             .setBackgroundQuaternary(Color.DARK_GRAY)
             .setAccentPrimary(Color.decode("#04CDF8"))
             .setAccentSecondary(Color.decode("#0452F8"))
+            .setErrorColor(Color.RED)
             .buildDefault();
 
     public static Theme DARK = new ThemeBuilder()
@@ -57,7 +58,7 @@ public class Theme {
         private Color foreground_primary, foreground_secondary;
         private Color background_primary, background_secondary, background_tertiary, background_quaternary;
         private Color accent_primary, accent_secondary;
-
+        private Color error_color;
         public ThemeBuilder() {
 
         }
@@ -131,6 +132,11 @@ public class Theme {
 
         public ThemeBuilder setAccentSecondary(Color color) {
             this.accent_secondary = color;
+            return this;
+        }
+
+        public ThemeBuilder setErrorColor(Color color){
+            this.error_color = color;
             return this;
         }
     }
