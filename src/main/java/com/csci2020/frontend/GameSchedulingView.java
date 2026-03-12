@@ -1,12 +1,14 @@
 package com.csci2020.frontend;
 
 import com.csci2020.backend.Team;
+import com.csci2020.backend.Scheduling;
 import jakarta.persistence.*;
 import javax.swing.*;
 import javax.swing.table.TableModel;
 import javax.swing.text.MaskFormatter;
 import java.time.LocalDateTime;
 import java.sql.Timestamp;
+import java.util.Date;
 
 public class GameSchedulingView extends JPanel {
     private final JScrollPane teamScroller;
@@ -55,9 +57,12 @@ public class GameSchedulingView extends JPanel {
     private void registerGame() {
         String teamOneName = team1Field.getText();
         String teamTwoName = team2Field.getText();
-        dateSpinner.setValue(LocalDateTime.now());
+        String date = (String) dateSpinner.getValue();
         if (teamOneName.isEmpty() && teamTwoName.isEmpty()) {
             JOptionPane.showMessageDialog(null, "You are missing a team name");
+        }
+        else {
+            // need to fill this in
         }
     }
 
