@@ -10,11 +10,11 @@ public class Scheduling {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id; // Identifies each scheduling instance
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "team_one_id", nullable = false)
     private Team teamOne; // One of the teams playing in the match
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "team_two_id", nullable = false)
     private Team teamTwo; // Other team that's playing in the match
 

@@ -38,10 +38,10 @@ public class GameSchedulingView extends JPanel {
         this.team2Field = new JTextField();
         this.dateLabel = new JLabel("Date:");
         this.dateSpinner = dateSpinner;
-        this.dateEditor = new JSpinner.DateEditor(dateSpinner, "dd.MM.yyyy");
+        this.dateEditor = new JSpinner.DateEditor(dateSpinner, "dd/MM/yyyy");
+        dateSpinner.setEditor(dateEditor);
         this.register = new JButton("Register Game");
 
-        add(teamScroller);
         add(team1Label);
         add(team1Field);
         add(team2Label);
@@ -54,17 +54,42 @@ public class GameSchedulingView extends JPanel {
         register.addActionListener(e -> registerGame());
     }
 
+    // Function called in register action listener, confirms the date for the game
     private void registerGame() {
         String teamOneName = team1Field.getText();
         String teamTwoName = team2Field.getText();
-        String date = (String) dateSpinner.getValue();
-        if (teamOneName.isEmpty() && teamTwoName.isEmpty()) {
-            JOptionPane.showMessageDialog(null, "You are missing a team name");
+
+        // Checks if either of the name fields are empty and gives an error message if so
+        if (teamOneName.isEmpty() || teamTwoName.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "You are missing one or both team names");
+            return;
         }
-        else {
-            // need to fill this in
-        }
+
+        // EntityManagerFactory to retrieve data from the database
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory("csci2020.backend");
+        EntityManager em = emf.createEntityManager();
+        // Creates query to search for the given team in the text field and assign it to team one
+        Team teamOne = em.createQuery(
+                "SELECT t FROM Team t WHERE t.name = :name", Team.class
+        ).setParameter("name", Team.class).getSingleResult();
+
+        // Creates query to search for the given team in the text field and assign it to team two
+        Team teamTwo = em.createQuery(
+                "SELECT t FROM t WHERE t.class = :name", Team.class
+        ).setParameter("name", Team.class).getSingleResult();
+
+        Date date = (Date) dateSpinner.getValue();
+
+        LocalDateTime dateTime = date.toInstant()
+                .atZone(java.time.ZoneId.systemDefault())
+                .toLocalDateTime();
+
+        Scheduling scheduling = new Scheduling(teamOne, teamTwo, dateTime);
+
+        em.getTransaction().begin();
+        em.persist(scheduling);
+        em.getTransaction().commit();
+
+        JOptionPane.showMessageDialog(null, "Game registered successfully!");
     }
-
-
 }
