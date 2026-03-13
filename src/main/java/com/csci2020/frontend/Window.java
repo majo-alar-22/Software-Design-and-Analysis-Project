@@ -4,6 +4,9 @@ import com.csci2020.backend.AuthenticationResult;
 import com.csci2020.backend.Database;
 import com.csci2020.backend.Player;
 import com.csci2020.backend.Team;
+import com.csci2020.frontend.views.LoggedInPanel;
+import com.csci2020.frontend.views.NewLoginPanel;
+import com.csci2020.frontend.views.RegisterPanel;
 
 import javax.swing.*;
 
@@ -20,7 +23,11 @@ public class Window extends JFrame {
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         this.setSize(1200, 800);
         this.setLocationRelativeTo(null);
-        showLoginPane();
+        if(db.isNewDatabase()) {
+            showRegisterPane();
+        } else {
+            showLoginPane();
+        }
     }
 
 
@@ -45,7 +52,7 @@ public class Window extends JFrame {
     }
 
     public void showLoggedInPane(){
-        this.setContentPane(new TeamRosterView(db, db.getCurrentUser().getPlayer().getTeam()));
+        this.setContentPane(new LoggedInPanel(db));
     }
 
     public void showRegisterPane(){

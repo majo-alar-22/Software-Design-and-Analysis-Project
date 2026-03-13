@@ -1,6 +1,8 @@
-package com.csci2020.frontend;
+package com.csci2020.frontend.views;
 
 import com.csci2020.backend.AuthenticationResult;
+import com.csci2020.frontend.NewTheme;
+import com.csci2020.frontend.RegisterListener;
 import com.csci2020.frontend.components.*;
 
 import javax.swing.*;

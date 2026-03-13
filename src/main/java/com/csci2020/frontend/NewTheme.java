@@ -76,7 +76,7 @@ public class NewTheme {
             .setInfo(Color.decode("#FFB86C"))
             .buildOrDefault(NewTheme.DARK);
 
-    private static NewTheme activeTheme = NewTheme.DRACULA;
+    private static NewTheme activeTheme = NewTheme.DARK;
     public static void setActiveTheme(NewTheme theme){
         activeTheme = theme;
     }

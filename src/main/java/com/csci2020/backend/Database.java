@@ -497,4 +497,21 @@ public class Database {
         }
         return null;
     }
+
+    public AuthenticationResult createTeam(String name, Player captain){
+        try(Session session = getFactory().openSession()) {
+            Team team = session.createQuery("FROM Team WHERE name = :name", Team.class)
+                    .setParameter("name", name)
+                    .getSingleResultOrNull();
+            if(team != null){
+                return new AuthenticationResult(AuthenticationResult.AUTHENTICATION_STATUS.ERROR, "Another team of that name exists");
+            }
+            Team newTeam = new Team(name);
+            newTeam.setCaptain(captain);
+            saveTeam(newTeam);
+        } catch(Exception e){
+            logger.log(Level.SEVERE, QUERY_ERROR_MESSAGE + e.getMessage(), e);
+        }
+        return new AuthenticationResult(AuthenticationResult.AUTHENTICATION_STATUS.SUCCESS, "Created team");
+    }
 }
