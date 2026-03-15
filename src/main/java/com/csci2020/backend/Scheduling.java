@@ -5,8 +5,9 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 @Entity
+@Table(name = "matches")
 public class Scheduling {
-@Id
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id; // Identifies each scheduling instance
 

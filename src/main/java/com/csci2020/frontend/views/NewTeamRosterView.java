@@ -1,5 +1,6 @@
 package com.csci2020.frontend.views;
 
+import com.csci2020.backend.Database;
 import com.csci2020.backend.Player;
 import com.csci2020.backend.Team;
 
@@ -11,7 +12,9 @@ public class NewTeamRosterView extends JPanel{
     private JTable playersTable = new JTable();
     private Team team;
     private JScrollPane playersContainer = new JScrollPane(playersTable);
-    public NewTeamRosterView(Team team){
+    private Database db;
+    public NewTeamRosterView(Database db, Team team){
+        this.db = db;
         this.team = team;
         playersTable.setModel(new TeamPlayerTableModel(team.getRoster()));
         this.add(playersContainer);
@@ -19,7 +22,7 @@ public class NewTeamRosterView extends JPanel{
 
     class TeamPlayerTableModel extends AbstractTableModel {
 
-        private static final String[] HEADERS = {"ID", "First Name", "Last Name"};
+        private static final String[] HEADERS = {"ID", "First Name", "Last Name", "Position"};
         private final List<Player> players;
 
         public TeamPlayerTableModel(List<Player> players) {
@@ -56,7 +59,10 @@ public class NewTeamRosterView extends JPanel{
 
         @Override
         public boolean isCellEditable(int row, int col) {
-            return false;
+            return switch (row) {
+                case 3 -> true;
+                default -> false;
+            };
         }
     }
 }

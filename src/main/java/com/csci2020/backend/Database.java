@@ -44,6 +44,7 @@ public class Database {
             conf.addAnnotatedClass(Player.class);
             conf.addAnnotatedClass(Team.class);
             conf.addAnnotatedClass(Account.class);
+            conf.addAnnotatedClass(Scheduling.class);
             factory = conf.buildSessionFactory(new StandardServiceRegistryBuilder().applySettings(conf.getProperties()).build());
         }
         return factory;
@@ -461,21 +462,6 @@ public class Database {
         }
     }
 
-    public AuthenticationResult createAdminAccount(String firstName, String lastName, char[] password){
-        if(currentUser != null && currentUser.isAdmin() || isNewDatabase()){
-            String targetName = firstName + "." + lastName;
-            long identifier = this.getUniqueIdentifierFromUsername(targetName);
-            String username = targetName + (identifier == 1 ? "" : identifier);
-            logger.log(Level.FINE, String.format("Trying to create admin account of username %s", username));
-            Player player = new Player(firstName, lastName);
-            byte[] salt = Authentication.generateSalt();
-            Account acc = new Account(username, player, salt, Authentication.hashPassword(password, salt), true);
-            this.saveAccount(acc);
-            return new AuthenticationResult(AuthenticationResult.AUTHENTICATION_STATUS.SUCCESS, "Created admin account \"" + username + "\"");
-        }
-        return new AuthenticationResult(AuthenticationResult.AUTHENTICATION_STATUS.INSUFFICIENT_PERMISSIONS, "Insufficient permissions");
-    }
-
     public Account getCurrentUser(){
         return this.currentUser;
     }
@@ -513,5 +499,16 @@ public class Database {
             logger.log(Level.SEVERE, QUERY_ERROR_MESSAGE + e.getMessage(), e);
         }
         return new AuthenticationResult(AuthenticationResult.AUTHENTICATION_STATUS.SUCCESS, "Created team");
+    }
+
+    public List<Scheduling> getAllMatches(){
+        logger.log(Level.FINE, "Retrieving all matches");
+        try(Session session = getFactory().openSession()) {
+            return session.createQuery("FROM matches", Scheduling.class)
+                    .getResultList();
+        } catch(Exception e){
+            logger.log(Level.SEVERE, QUERY_ERROR_MESSAGE + e.getMessage(), e);
+            return new ArrayList<>();
+        }
     }
 }

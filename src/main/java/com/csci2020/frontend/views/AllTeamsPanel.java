@@ -32,7 +32,7 @@ public class AllTeamsPanel extends JPanel {
     public void displayTeamRoster(Team team){
         this.removeAll();
         this.add(teamsContainer, BorderLayout.LINE_START);
-        this.selectedTeamView = new NewTeamRosterView(team);
+        this.selectedTeamView = new NewTeamRosterView(db, team);
         this.add(selectedTeamView, BorderLayout.LINE_END);
     }
 
