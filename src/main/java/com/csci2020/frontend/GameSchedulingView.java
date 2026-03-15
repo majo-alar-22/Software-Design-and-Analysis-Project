@@ -14,7 +14,7 @@ public class GameSchedulingView extends JPanel {
     private final JScrollPane teamScroller;
     private final JTable rosterTable;
     private final TableModel tableModel;
-    private final TeamRosterView rosterView;
+//    private final TeamRosterView rosterView;
     // UI labels and text fields below
     private final JLabel team1Label;
     private final JTextField team1Field;
@@ -31,7 +31,7 @@ public class GameSchedulingView extends JPanel {
         this.teamScroller = new JScrollPane();
         this.rosterTable = new JTable();
         this.tableModel = tableModel;
-        this.rosterView = new TeamRosterView(team);
+//        this.rosterView = new TeamRosterView(team);
         this.team1Label = new JLabel("Team 1:");
         this.team1Field = new JTextField();
         this.team2Label = new JLabel("Team 2:");
@@ -47,7 +47,7 @@ public class GameSchedulingView extends JPanel {
         add(team2Label);
         add(team2Field);
         add(register);
-        teamScroller.setViewportView(rosterView);
+//        teamScroller.setViewportView(rosterView);
         add(teamScroller);
 
         // Listener for when register is pressed

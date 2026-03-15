@@ -20,22 +20,22 @@ public class Team {
     private List<Player> roster = new ArrayList<>();
 
     @Column(name = "wins")
-    private int wins;
+    private Integer wins = 0;
 
     @Column(name = "draws")
-    private int draws;
+    private Integer draws = 0;
 
     @Column(name = "losses")
-    private int losses;
+    private Integer losses = 0;
 
     @Column(name = "goalsFor")
-    private int goalsFor;
+    private Integer goalsFor = 0;
 
     @Column(name = "goalsAgainst")
-    private int goalsAgainst;
+    private Integer goalsAgainst = 0;
 
     @Column(name = "points")
-    private int points;
+    private Integer points = 0;
 
     @Deprecated(forRemoval = false)
     public Team() {
