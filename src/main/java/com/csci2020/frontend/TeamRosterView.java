@@ -16,6 +16,7 @@ public class TeamRosterView extends JPanel {
     private final TeamRosterTableModel tableModel;
     private final JLabel teamNameLabel;
     private final Database db;
+    private final JButton viewStandingsButton;
 
     private static final String[] HEADERS = {"ID", "First Name", "Last Name"};
 
@@ -29,32 +30,35 @@ public class TeamRosterView extends JPanel {
         this.roster = new JTable(tableModel);
         this.rosterScroller = new JScrollPane(roster);
         this.teamNameLabel = new JLabel(team.getName());
+        this.viewStandingsButton = new JButton("View Standings");
 
         init();
+        initHandler();
     }
 
     // Function organizing and initializing elements of the roster view
     private void init() {
         this.setLayout(new GridBagLayout());
-        this.setBackground(new Color(235, 242, 250));
+        this.setBackground(Theme.getActiveTheme().getBackgroundPrimary());
 
         // Panel for roster or "card" panel of a team with size, color and border
         JPanel cardPanel = new JPanel(new BorderLayout(10, 10));
-        cardPanel.setPreferredSize(new Dimension(700, 450));
-        cardPanel.setBackground(Color.WHITE);
+        cardPanel.setPreferredSize(new Dimension(700, 520));
+        cardPanel.setBackground(Theme.getActiveTheme().getBackgroundSecondary());
         cardPanel.setBorder(new EmptyBorder(20, 25, 20, 25));
 
         // setts font and size for the label of the team name
         teamNameLabel.setHorizontalAlignment(SwingConstants.CENTER);
         teamNameLabel.setFont(new Font("SansSerif", Font.BOLD, 24));
+        teamNameLabel.setForeground(Theme.getActiveTheme().getForegroundPrimary());
 
         JLabel subtitleLabel = new JLabel("Team Roster", SwingConstants.CENTER);
         subtitleLabel.setFont(new Font("SansSerif", Font.PLAIN, 14));
-        subtitleLabel.setForeground(Color.DARK_GRAY);
+        subtitleLabel.setForeground(Theme.getActiveTheme().getForegroundSecondary());
 
         // Panel for the header when viewing a team's roster
         JPanel headerPanel = new JPanel(new GridLayout(2, 1, 0, 5));
-        headerPanel.setBackground(Color.WHITE);
+        headerPanel.setBackground(Theme.getActiveTheme().getBackgroundSecondary());
         headerPanel.add(teamNameLabel);
         headerPanel.add(subtitleLabel);
 
@@ -63,15 +67,31 @@ public class TeamRosterView extends JPanel {
         roster.setFont(new Font("SansSerif", Font.PLAIN, 14));
         roster.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         roster.getTableHeader().setReorderingAllowed(false);
+        roster.setBackground(Theme.getActiveTheme().getBackgroundSecondary());
+        roster.setForeground(Theme.getActiveTheme().getForegroundPrimary());
+        roster.setSelectionBackground(Theme.getActiveTheme().getBackgroundPrimary());
+        roster.setSelectionForeground(Theme.getActiveTheme().getForegroundSecondary());
 
         JTableHeader tableHeader = roster.getTableHeader();
         tableHeader.setFont(new Font("SansSerif", Font.BOLD, 14));
+        tableHeader.setBackground(Theme.getActiveTheme().getBackgroundTertiary());
+        tableHeader.setForeground(Theme.getActiveTheme().getForegroundPrimary());
 
         // Scroller for the roster view to see all players
         rosterScroller.setBorder(BorderFactory.createLineBorder(new Color(200, 200, 200)));
 
+        JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 5));
+        bottomPanel.setBackground(Theme.getActiveTheme().getBackgroundSecondary());
+
+        viewStandingsButton.setPreferredSize(new Dimension(180, 35));
+        viewStandingsButton.setBackground(Theme.getActiveTheme().getBackgroundTertiary());
+        viewStandingsButton.setForeground(Theme.getActiveTheme().getForegroundPrimary());
+
+        bottomPanel.add(viewStandingsButton);
+
         cardPanel.add(headerPanel, BorderLayout.NORTH);
         cardPanel.add(rosterScroller, BorderLayout.CENTER);
+        cardPanel.add(bottomPanel, BorderLayout.SOUTH);
 
         this.add(cardPanel);
 
@@ -86,6 +106,15 @@ public class TeamRosterView extends JPanel {
 //        this.add(lightCLR);
 //        this.add(dracCLR, BorderLayout.CENTER);
 //        this.add(lightCLR, BorderLayout.SOUTH);
+    }
+
+    private void initHandler() {
+        viewStandingsButton.addActionListener((event) -> {
+            Window window = (Window) SwingUtilities.getWindowAncestor(this);
+            if (window != null) {
+                window.showStandingsView();
+            }
+        });
     }
 
     class TeamRosterTableModel extends AbstractTableModel {

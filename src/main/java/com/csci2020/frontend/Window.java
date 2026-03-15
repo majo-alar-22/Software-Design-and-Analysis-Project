@@ -9,9 +9,6 @@ import javax.swing.*;
 public class Window extends JFrame {
     private final Database db;
 
-    /** Constructor for the window
-     * @param db: instance of a Database object, controls access to the database
-     **/
     public Window(Database db) {
         this.db = db;
 
@@ -23,7 +20,6 @@ public class Window extends JFrame {
         this.setContentPane(new LoginPanel(db, this));
     }
 
-    // Function to display error messages for login or account issues
     public void showLoggedInUserTeamRoster() {
         if (db.getCurrentUser() == null) {
             JOptionPane.showMessageDialog(this, "No user is currently logged in.");
@@ -43,7 +39,6 @@ public class Window extends JFrame {
             this.setContentPane(new RegisterTeamsPanel(db, this));
             this.revalidate();
             this.repaint();
-
             return;
         }
 
@@ -62,6 +57,18 @@ public class Window extends JFrame {
         }
 
         this.setContentPane(new TeamRosterView(db, team));
+        this.revalidate();
+        this.repaint();
+    }
+
+    public void showGameOutcomePanel() {
+        this.setContentPane(new GameOutcomePanel(db, this));
+        this.revalidate();
+        this.repaint();
+    }
+
+    public void showStandingsView() {
+        this.setContentPane(new TeamStandingsView(db));
         this.revalidate();
         this.repaint();
     }
