@@ -46,7 +46,7 @@ public class DBGenerator {
             "Savage Eagles", "Thunder Tigers", "Crimson Panthers", "Obsidian Wolves", "Mystic Wolves"
     };
     //Names above were generated with AI
-    static Logger logger = Logging.createLogger("DBGenerator", Path.of(".","generator.log"));
+    static Logger logger = Logging.createLogger("DBGenerator", Path.of(".","generator.log"), false);
     static Database db = new Database(Path.of(".","database"));
     public static void main(String[] args){
         List<String> remainingTeamNames = new ArrayList<>(List.of(teamNames));
@@ -122,7 +122,7 @@ public class DBGenerator {
         try{
             throw new Exception("This is an exception!");
         } catch (Exception e){
-            Logging.createLogger("DBGenerator", Path.of(".","generator.log")).log(Level.SEVERE, "Failed to perform some operation", e);
+            Logging.createLogger("DBGenerator", Path.of(".","generator.log"), false).log(Level.SEVERE, "Failed to perform some operation", e);
         }
     }
     public static <T> T randomItemFromArray(T[] array){

@@ -20,10 +20,10 @@ import java.util.regex.Pattern;
  */
 public class Database {
     private Account currentUser;
-    private final Logger logger = Logging.createLogger("Database", Path.of(".","latest.log"));
+    private final Logger logger;
     private static final String QUERY_ERROR_MESSAGE = "Failed to create query: ",
         TRANSACTION_ERROR_MESSAGE = "Failed to commit transaction: ";
-    private static SessionFactory factory = null;
+    private SessionFactory factory = null;
     private final Path filepath;
     /**
      * Constructs or returns a singleton {@link SessionFactory} used to access the database.
@@ -31,27 +31,35 @@ public class Database {
      * @return {@link SessionFactory} singleton
      */
     public SessionFactory getFactory(){
-        if(factory == null){
-            Configuration conf = new Configuration();
-            Properties settings = new Properties();
-            settings.put("hibernate.connection.driver_class", "org.h2.Driver");
-            settings.put("hibernate.connection.url","jdbc:h2:file:" + filepath.toString());
-            settings.put("hibernate.connection.username", "sa");
-            settings.put("hibernate.connection.password","");
-            settings.put("hibernate.show_sql", "false");
-            settings.put("hibernate.hbm2ddl.auto","update");
-            conf.setProperties(settings);
-            conf.addAnnotatedClass(Player.class);
-            conf.addAnnotatedClass(Team.class);
-            conf.addAnnotatedClass(Account.class);
-            conf.addAnnotatedClass(Scheduling.class);
-            factory = conf.buildSessionFactory(new StandardServiceRegistryBuilder().applySettings(conf.getProperties()).build());
-        }
         return factory;
     }
 
-    public Database(Path filepath){
+    public Database(Path filepath, boolean consoleLogOnly){
         this.filepath = filepath;
+        Configuration conf = getConfiguration(filepath);
+        conf.addAnnotatedClass(Player.class);
+        conf.addAnnotatedClass(Team.class);
+        conf.addAnnotatedClass(Account.class);
+        conf.addAnnotatedClass(Scheduling.class);
+        factory = conf.buildSessionFactory(new StandardServiceRegistryBuilder().applySettings(conf.getProperties()).build());
+        this.logger = Logging.createLogger("Database", Path.of(".","latest.log"), consoleLogOnly);
+    }
+
+    public Database(Path filepath){
+        this(filepath, false);
+    }
+
+    private static Configuration getConfiguration(Path filepath) {
+        Configuration conf = new Configuration();
+        Properties settings = new Properties();
+        settings.put("hibernate.connection.driver_class", "org.h2.Driver");
+        settings.put("hibernate.connection.url","jdbc:h2:file:" + filepath.toString());
+        settings.put("hibernate.connection.username", "sa");
+        settings.put("hibernate.connection.password","");
+        settings.put("hibernate.show_sql", "false");
+        settings.put("hibernate.hbm2ddl.auto","update");
+        conf.setProperties(settings);
+        return conf;
     }
 
     /**
@@ -288,18 +296,15 @@ public class Database {
             return new ArrayList<>();
         }
     }
-    static Logger accountLogger = Logging.createLogger("account", Path.of(".","account.log"));
     public long getUniqueIdentifierFromUsername(String username){
-//        return (long) (Math.random()*10+1);
         try(Session session = getFactory().openSession()) {
             List<String> usernames = session.createQuery("SELECT user.username FROM Account user WHERE user.username = :username OR user.username LIKE CONCAT(:username,'%')", String.class)
                     .setParameter("username",username)
                     .getResultList().stream()
                     .filter(s -> s.matches(Pattern.quote(username) + "\\d+")).toList();
-            accountLogger.log(Level.INFO, username);
+            logger.log(Level.INFO, username);
             for(String name : usernames){
-//                System.out.printf("%s: %s%n", username, name);
-                accountLogger.log(Level.INFO, "\t" + name);
+                logger.log(Level.INFO, "\t" + name);
             }
                     return usernames.stream().map(s -> {
                         System.out.println(s +": " + s.substring(username.length()));
@@ -308,9 +313,7 @@ public class Database {
                     .mapToLong(Long::parseLong)
                     .max().orElse(0) + 1;
 
-//            return (long) (Math.random()*10+1);
         } catch(Exception e){
-//            e.printStackTrace();
             logger.log(Level.SEVERE, QUERY_ERROR_MESSAGE + e.getMessage(), e);
             throw new RuntimeException(e);
         }
@@ -391,11 +394,11 @@ public class Database {
         byte[] salt = Authentication.generateSalt();
         boolean shouldBeAdmin = admin;
         if(shouldBeAdmin){
-            if((currentUser == null || currentUser.isAdmin()) && !isNewDatabase()){
+            if((currentUser == null || !currentUser.isAdmin()) && !isNewDatabase()){
                 shouldBeAdmin = false;
             }
         }
-        Account acc = new Account(username, player, salt, Authentication.hashPassword(password, salt), false);
+        Account acc = new Account(username, player, salt, Authentication.hashPassword(password, salt), shouldBeAdmin);
         this.saveAccount(acc);
         return new AuthenticationResult(AuthenticationResult.AUTHENTICATION_STATUS.SUCCESS, "Created account");
     }

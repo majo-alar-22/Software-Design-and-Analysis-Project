@@ -2,6 +2,7 @@ package com.csci2020.backend;
 
 import jakarta.persistence.*;
 
+import java.lang.reflect.Field;
 import java.nio.file.Path;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -88,8 +89,32 @@ public class Account {
         return admin;
     }
 
-//
-//    public static Account createNewAccount(String username, String firstName, String lastName, String password){
-//
+    @Override
+    public boolean equals(Object other) {
+        if(this == other)
+            return true;
+        if(other == null)
+            return false;
+        if(other instanceof Account)
+            return this.username.equals(((Account) other).username);
+        return false;
+    }
+
+//    For testing
+//    public String toString(){
+//        StringBuilder sb = new StringBuilder("(");
+//        for(Field f : this.getClass().getDeclaredFields()){
+//            f.setAccessible(true);
+//            sb.append(f.getName());
+//            sb.append(": ");
+//            try {
+//                sb.append(f.get(this));
+//            } catch (IllegalAccessException e) {
+//                sb.append("Error");
+//                e.printStackTrace();
+//            }
+//        }
+//        sb.append(")");
+//        return sb.toString();
 //    }
 }

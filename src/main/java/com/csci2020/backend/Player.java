@@ -2,6 +2,8 @@ package com.csci2020.backend;
 
 import jakarta.persistence.*;
 
+import java.util.Objects;
+
 
 @Entity
 @Table(name = "players")
@@ -255,5 +257,9 @@ public class Player {
     @Override
     public String toString(){
         return String.format("(%d: %s %s, %s)", ID, firstName, lastName, team == null ? "No team" : team.getName());
+    }
+
+    public boolean equals(Player other){
+        return Objects.equals(this.ID, other.ID);
     }
 }

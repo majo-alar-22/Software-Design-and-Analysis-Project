@@ -15,10 +15,9 @@ public class Logging {
      * @param filepath Path to write to
      * @return A logger
      */
-    public static Logger createLogger(String name, Path filepath){
+    public static Logger createLogger(String name, Path filepath, boolean consoleLogOnly){
         Logger logger = Logger.getLogger(name);
         try {
-            FileHandler fh = new FileHandler(filepath.toString());
             Formatter formatter = new Formatter() {
                 @Override
                 public String format(LogRecord logRecord) {
@@ -40,9 +39,12 @@ public class Logging {
                     return sb.toString();
                 }
             };
-            fh.setFormatter(formatter);
-            logger.addHandler(fh);
-            logger.setUseParentHandlers(false);
+            if(!consoleLogOnly) {
+                FileHandler fh = new FileHandler(filepath.toString());
+                fh.setFormatter(formatter);
+                logger.addHandler(fh);
+                logger.setUseParentHandlers(false);
+            }
             logger.setLevel(Level.FINEST);
         } catch (IOException e) {
             throw new RuntimeException(e);

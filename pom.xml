@@ -24,5 +24,11 @@
             <artifactId>hibernate-core</artifactId>
             <version>7.2.5.Final</version>
         </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>6.1.0-M1</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 </project>
