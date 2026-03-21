@@ -72,8 +72,9 @@ public class Team {
     }
 
     public boolean removePlayer(Player player) {
-        if (roster.size() <= 1)
+        if (roster.size() <= 1) {
             return false;
+        }
 
         this.roster.remove(player);
         player.setTeam(null);
@@ -86,22 +87,22 @@ public class Team {
     }
 
     public void recordMatch(int goalsScored, int goalsAllowed) {
-        this.goalsFor += goalsScored;
-        this.goalsAgainst += goalsAllowed;
+        this.goalsFor = getGoalsFor() + goalsScored;
+        this.goalsAgainst = getGoalsAgainst() + goalsAllowed;
 
         if (goalsScored > goalsAllowed) {
-            this.wins++;
-            this.points += 3;
+            this.wins = getWins() + 1;
+            this.points = getPoints() + 3;
         } else if (goalsScored == goalsAllowed) {
-            this.draws++;
-            this.points += 1;
+            this.draws = getDraws() + 1;
+            this.points = getPoints() + 1;
         } else {
-            this.losses++;
+            this.losses = getLosses() + 1;
         }
     }
 
     public int getGoalDifference() {
-        return goalsFor - goalsAgainst;
+        return getGoalsFor() - getGoalsAgainst();
     }
 
     public String getName() {
@@ -117,32 +118,33 @@ public class Team {
     }
 
     public int getWins() {
-        return wins;
+        return wins == null ? 0 : wins;
     }
 
     public int getDraws() {
-        return draws;
+        return draws == null ? 0 : draws;
     }
 
     public int getLosses() {
-        return losses;
+        return losses == null ? 0 : losses;
     }
 
     public int getGoalsFor() {
-        return goalsFor;
+        return goalsFor == null ? 0 : goalsFor;
     }
 
     public int getGoalsAgainst() {
-        return goalsAgainst;
+        return goalsAgainst == null ? 0 : goalsAgainst;
     }
 
     public int getPoints() {
-        return points;
+        return points == null ? 0 : points;
     }
 
     public void setCaptain(Player captain) {
-        if (captain == null)
+        if (captain == null) {
             return;
+        }
 
         this.captain = captain;
 
