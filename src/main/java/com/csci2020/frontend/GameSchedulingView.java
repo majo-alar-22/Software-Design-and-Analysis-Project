@@ -1,5 +1,6 @@
 package com.csci2020.frontend;
 
+import com.csci2020.backend.Database;
 import com.csci2020.backend.Team;
 import com.csci2020.backend.Scheduling;
 import jakarta.persistence.*;
@@ -8,12 +9,14 @@ import javax.swing.table.TableModel;
 import javax.swing.text.MaskFormatter;
 import java.time.LocalDateTime;
 import java.sql.Timestamp;
+import java.time.ZoneId;
 import java.util.Date;
 
 public class GameSchedulingView extends JPanel {
     private final JScrollPane teamScroller;
     private final JTable rosterTable;
     private final TableModel tableModel;
+    private final Database db;
 //    private final TeamRosterView rosterView;
 
     // UI labels and text fields below
@@ -32,11 +35,12 @@ public class GameSchedulingView extends JPanel {
      * @param team
      * @param dateSpinner
      * **/
-    public GameSchedulingView(TableModel tableModel, Team team, JSpinner dateSpinner) {
+    public GameSchedulingView(TableModel tableModel, Team team, Database db, JSpinner dateSpinner) {
         this.teamScroller = new JScrollPane();
         this.rosterTable = new JTable();
         this.tableModel = tableModel;
-//      this.rosterView = new TeamRosterView(team);
+        this.db = db;
+        //      this.rosterView = new TeamRosterView(team);
         this.team1Label = new JLabel("Team 1:");
         this.team1Field = new JTextField();
         this.team2Label = new JLabel("Team 2:");
@@ -98,7 +102,7 @@ public class GameSchedulingView extends JPanel {
         Date date = (Date) dateSpinner.getValue();
 
         LocalDateTime dateTime = date.toInstant()
-                .atZone(java.time.ZoneId.systemDefault())
+                .atZone(ZoneId.systemDefault())
                 .toLocalDateTime();
 
         Scheduling scheduling = new Scheduling(teamOne, teamTwo, dateTime);

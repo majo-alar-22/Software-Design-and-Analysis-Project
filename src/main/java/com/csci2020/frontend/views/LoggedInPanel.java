@@ -1,6 +1,7 @@
 package com.csci2020.frontend.views;
 
 import com.csci2020.backend.Database;
+import com.csci2020.frontend.GameSchedulingView;
 import com.csci2020.frontend.TeamStandingsView;
 
 import javax.swing.*;
@@ -18,7 +19,11 @@ public class LoggedInPanel extends JPanel {
         this.tabbedPane.addTab("Players", new AllPlayersPanel(db));
         this.tabbedPane.addTab("Teams", new AllTeamsPanel(db));
         this.tabbedPane.addTab("My Team", new MyTeamPanel(db));
-        this.tabbedPane.addTab("Matches", new JLabel("Not implemented yet"));
+
+        // this.tabbedPane.addTab("Matches", new JLabel("Not implemented yet"));
+        JSpinner spinner = new JSpinner(new SpinnerDateModel());
+        this.tabbedPane.addTab("Matches", new GameSchedulingView(null,null,db,spinner));
+
         this.add(tabbedPane);
     }
 }

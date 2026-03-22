@@ -124,4 +124,14 @@ public class Window extends JFrame {
         this.revalidate();
         this.repaint();
     }
+
+    public void showGameSchedulingPanel() {
+        // creates a default spinner with the current date and time
+        JSpinner spinner = new JSpinner(new SpinnerDateModel());
+        GameSchedulingView panel = new GameSchedulingView(null, null, db, spinner);
+
+        this.setContentPane(panel);
+        this.revalidate();
+        this.repaint();
+    }
 }
