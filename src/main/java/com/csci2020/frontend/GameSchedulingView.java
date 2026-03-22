@@ -7,8 +7,8 @@ import jakarta.persistence.*;
 import javax.swing.*;
 import javax.swing.table.TableModel;
 import javax.swing.text.MaskFormatter;
+import java.sql.*;
 import java.time.LocalDateTime;
-import java.sql.Timestamp;
 import java.time.ZoneId;
 import java.util.Date;
 
@@ -30,11 +30,14 @@ public class GameSchedulingView extends JPanel {
     // Button to confirm a scheduled game
     private final JButton register;
 
-    /** Constructor
+    /**
+     * Constructor
+     *
      * @param tableModel
      * @param team
      * @param dateSpinner
-     * **/
+     *
+     **/
     public GameSchedulingView(TableModel tableModel, Team team, Database db, JSpinner dateSpinner) {
         this.teamScroller = new JScrollPane();
         this.rosterTable = new JTable();
@@ -43,13 +46,16 @@ public class GameSchedulingView extends JPanel {
         //      this.rosterView = new TeamRosterView(team);
         this.team1Label = new JLabel("Team 1:");
         this.team1Field = new JTextField();
+        this.team1Field.setColumns(10);
         this.team2Label = new JLabel("Team 2:");
         this.team2Field = new JTextField();
+        this.team2Field.setColumns(10);
         this.dateLabel = new JLabel("Date:");
         this.dateSpinner = dateSpinner;
         this.dateEditor = new JSpinner.DateEditor(dateSpinner, "dd/MM/yyyy HH:mm");
         dateSpinner.setEditor(dateEditor);
         this.register = new JButton("Register Game");
+        this.setBackground(Theme.getActiveTheme().getBackgroundPrimary());
 
         add(team1Label);
         add(team1Field);
@@ -71,46 +77,34 @@ public class GameSchedulingView extends JPanel {
         String teamTwoName = team2Field.getText();
 
         // Checks if either of the name fields are empty and gives an error message if so
-        if (teamOneName.isEmpty() || teamTwoName.isEmpty()) {
+        if (teamOneName == null || teamTwoName == null) {
             JOptionPane.showMessageDialog(null, "You are missing one or both teams");
             return;
         }
 
-        // EntityManagerFactory to retrieve data from the database
-        EntityManagerFactory emf = Persistence.createEntityManagerFactory("csci2020.backend");
-        EntityManager em = emf.createEntityManager();
-
-        Team teamOne;
-        Team teamTwo;
-
-        try {
-
-            // Creates query to search for the given team in the text field and assign it to team one
-            teamOne = em.createQuery(
-                    "SELECT t FROM Team t WHERE t.name = :name", Team.class
-            ).setParameter("name", teamOneName).getSingleResult();
-
-            // Creates query to search for the given team in the text field and assign it to team two
-            teamTwo = em.createQuery(
-                    "SELECT t FROM t WHERE t.name = :name", Team.class
-            ).setParameter("name", teamTwoName).getSingleResult();
-        }catch (NoResultException e) {
-            JOptionPane.showMessageDialog(null, "Team(s) not found");
-            return;
-        }
+        Team teamOne = db.getTeamByName(teamOneName);
+        Team teamTwo = db.getTeamByName(teamTwoName);
 
         Date date = (Date) dateSpinner.getValue();
 
         LocalDateTime dateTime = date.toInstant()
-                .atZone(ZoneId.systemDefault())
+                .atZone(java.time.ZoneId.systemDefault())
                 .toLocalDateTime();
 
-        Scheduling scheduling = new Scheduling(teamOne, teamTwo, dateTime);
-
-        em.getTransaction().begin();
-        em.persist(scheduling);
-        em.getTransaction().commit();
+        db.scheduleGame(teamOne, teamTwo, dateTime);
 
         JOptionPane.showMessageDialog(null, "Game registered successfully!");
+    }
+
+    /****/
+    public boolean recordExists(Connection connection, Team teamName) throws SQLException {
+        String sql = "SELECT 1 FROM db WHERE teamName = ?";
+
+        try(PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, teamName.getName());
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
+        }
     }
 }

@@ -1,5 +1,6 @@
 package com.csci2020.backend;
 
+import com.csci2020.frontend.TeamRosterView;
 import jakarta.persistence.NoResultException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -8,6 +9,7 @@ import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 
 import java.nio.file.Path;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -508,6 +510,35 @@ public class Database {
         } catch(Exception e){
             logger.log(Level.SEVERE, QUERY_ERROR_MESSAGE + e.getMessage(), e);
             return new ArrayList<>();
+        }
+    }
+
+    public void scheduleGame(Team teamOne, Team teamTwo, LocalDateTime matchDateTime){
+        if(teamOne == null || teamTwo == null){
+            throw new IllegalArgumentException("Teams cannot be null");
+        }
+        if(teamOne.equals(teamTwo)){
+            throw new IllegalArgumentException("A team cannot play against itself");
+        }
+
+        logger.log(Level.FINE, "Scheduling game: " + teamOne.getName() + " vs " + teamTwo.getName());
+
+        Transaction transaction = null;
+
+        try(Session session = getFactory().openSession()) {
+            transaction = session.beginTransaction();
+
+            Scheduling scheduling = new Scheduling(teamOne, teamTwo, matchDateTime);
+
+            session.persist(scheduling);
+
+            transaction.commit();
+        }catch(Exception e){
+            if(transaction != null){
+                transaction.rollback();
+            }
+            logger.log(Level.SEVERE, TRANSACTION_ERROR_MESSAGE + e.getMessage(), e);
+
         }
     }
 }

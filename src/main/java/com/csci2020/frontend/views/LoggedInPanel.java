@@ -19,7 +19,6 @@ public class LoggedInPanel extends JPanel {
         this.tabbedPane.addTab("Players", new AllPlayersPanel(db));
         this.tabbedPane.addTab("Teams", new AllTeamsPanel(db));
         this.tabbedPane.addTab("My Team", new MyTeamPanel(db));
-
         // this.tabbedPane.addTab("Matches", new JLabel("Not implemented yet"));
         JSpinner spinner = new JSpinner(new SpinnerDateModel());
         this.tabbedPane.addTab("Matches", new GameSchedulingView(null,null,db,spinner));
