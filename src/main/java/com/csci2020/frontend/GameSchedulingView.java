@@ -96,7 +96,12 @@ public class GameSchedulingView extends JPanel {
         JOptionPane.showMessageDialog(null, "Game registered successfully!");
     }
 
-    /****/
+    /**
+     * Function to check if a team name record exists in the database. Intended to be used for the registerGame() function. Work in progress.
+     * @param teamName: the name of the team that's existence is checked for in the database
+     * @param connection:
+     * @throws SQLException:
+     **/
     public boolean recordExists(Connection connection, Team teamName) throws SQLException {
         String sql = "SELECT 1 FROM db WHERE teamName = ?";
 
