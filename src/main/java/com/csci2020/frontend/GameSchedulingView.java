@@ -15,6 +15,7 @@ public class GameSchedulingView extends JPanel {
     private final JTable rosterTable;
     private final TableModel tableModel;
 //    private final TeamRosterView rosterView;
+
     // UI labels and text fields below
     private final JLabel team1Label;
     private final JTextField team1Field;
@@ -26,19 +27,23 @@ public class GameSchedulingView extends JPanel {
     // Button to confirm a scheduled game
     private final JButton register;
 
-    // Constructor
+    /** Constructor
+     * @param tableModel
+     * @param team
+     * @param dateSpinner
+     * **/
     public GameSchedulingView(TableModel tableModel, Team team, JSpinner dateSpinner) {
         this.teamScroller = new JScrollPane();
         this.rosterTable = new JTable();
         this.tableModel = tableModel;
-//        this.rosterView = new TeamRosterView(team);
+//      this.rosterView = new TeamRosterView(team);
         this.team1Label = new JLabel("Team 1:");
         this.team1Field = new JTextField();
         this.team2Label = new JLabel("Team 2:");
         this.team2Field = new JTextField();
         this.dateLabel = new JLabel("Date:");
         this.dateSpinner = dateSpinner;
-        this.dateEditor = new JSpinner.DateEditor(dateSpinner, "dd/MM/yyyy");
+        this.dateEditor = new JSpinner.DateEditor(dateSpinner, "dd/MM/yyyy HH:mm");
         dateSpinner.setEditor(dateEditor);
         this.register = new JButton("Register Game");
 
@@ -47,8 +52,10 @@ public class GameSchedulingView extends JPanel {
         add(team2Label);
         add(team2Field);
         add(register);
-//        teamScroller.setViewportView(rosterView);
+        // teamScroller.setViewportView(rosterView);
         add(teamScroller);
+        add(dateLabel);
+        add(dateSpinner);
 
         // Listener for when register is pressed
         register.addActionListener(e -> registerGame());
@@ -61,22 +68,32 @@ public class GameSchedulingView extends JPanel {
 
         // Checks if either of the name fields are empty and gives an error message if so
         if (teamOneName.isEmpty() || teamTwoName.isEmpty()) {
-            JOptionPane.showMessageDialog(null, "You are missing one or both team names");
+            JOptionPane.showMessageDialog(null, "You are missing one or both teams");
             return;
         }
 
         // EntityManagerFactory to retrieve data from the database
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("csci2020.backend");
         EntityManager em = emf.createEntityManager();
-        // Creates query to search for the given team in the text field and assign it to team one
-        Team teamOne = em.createQuery(
-                "SELECT t FROM Team t WHERE t.name = :name", Team.class
-        ).setParameter("name", Team.class).getSingleResult();
 
-        // Creates query to search for the given team in the text field and assign it to team two
-        Team teamTwo = em.createQuery(
-                "SELECT t FROM t WHERE t.class = :name", Team.class
-        ).setParameter("name", Team.class).getSingleResult();
+        Team teamOne;
+        Team teamTwo;
+
+        try {
+
+            // Creates query to search for the given team in the text field and assign it to team one
+            teamOne = em.createQuery(
+                    "SELECT t FROM Team t WHERE t.name = :name", Team.class
+            ).setParameter("name", teamOneName).getSingleResult();
+
+            // Creates query to search for the given team in the text field and assign it to team two
+            teamTwo = em.createQuery(
+                    "SELECT t FROM t WHERE t.name = :name", Team.class
+            ).setParameter("name", teamTwoName).getSingleResult();
+        }catch (NoResultException e) {
+            JOptionPane.showMessageDialog(null, "Team(s) not found");
+            return;
+        }
 
         Date date = (Date) dateSpinner.getValue();
 
