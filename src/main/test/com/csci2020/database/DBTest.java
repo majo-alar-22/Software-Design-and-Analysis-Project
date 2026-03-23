@@ -26,7 +26,7 @@ public class DBTest {
         db.getFactory().close();
         File dbFile = new File(dbPath+".mv.db");
         System.out.println(dbFile);
-//        assertTrue(dbFile.delete());
+        assertTrue(dbFile.delete());
     }
 
     @Test
