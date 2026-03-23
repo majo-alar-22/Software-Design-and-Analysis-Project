@@ -8,6 +8,7 @@ import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 
 import java.nio.file.Path;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -503,11 +504,31 @@ public class Database {
     public List<Scheduling> getAllMatches(){
         logger.log(Level.FINE, "Retrieving all matches");
         try(Session session = getFactory().openSession()) {
-            return session.createQuery("FROM matches", Scheduling.class)
+            return session.createQuery("FROM Scheduling ", Scheduling.class)
                     .getResultList();
         } catch(Exception e){
             logger.log(Level.SEVERE, QUERY_ERROR_MESSAGE + e.getMessage(), e);
             return new ArrayList<>();
         }
     }
+
+    public void saveMatch(Team teamOne, Team teamTwo, LocalDateTime dateTime){
+        if(teamOne == null || teamTwo == null || dateTime == null){
+            throw new IllegalArgumentException("Match data may not be null");
+        }
+        logger.log(Level.FINE, "Saving match");
+        Transaction transaction = null;
+        try(Session session = getFactory().openSession()){
+            transaction = session.beginTransaction();
+            Scheduling match = new Scheduling(teamOne, teamTwo, dateTime);
+            session.merge(match);
+            transaction.commit();
+        } catch(Exception e){
+            if(transaction != null){
+                transaction.rollback();
+            }
+            logger.log(Level.SEVERE, TRANSACTION_ERROR_MESSAGE + e.getMessage(), e);
+        }
+    }
+
 }
