@@ -53,7 +53,7 @@ public class RegisterPanel extends JPanel {
         setLayout(new GridBagLayout());
 
         cardPanel.setLayout(new BorderLayout(0, 18));
-        cardPanel.setPreferredSize(new Dimension(500, 520));
+        cardPanel.setPreferredSize(new Dimension(500, 550));
         cardPanel.setBorder(new EmptyBorder(28, 30, 24, 30));
 
         title.setHorizontalAlignment(SwingConstants.CENTER);
