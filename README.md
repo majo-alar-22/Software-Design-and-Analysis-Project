@@ -33,3 +33,38 @@ TODO
   <img src = "images/MyTeam-Page.png" alt = "My Team Creation page" width = "850" height = "850">
 </p>
 
+# Instructions on how to test/run program:
+- Have maven and Java 25 installed
+
+## Unix:
+### 1st Step:
+```bash
+./build.sh
+```
+
+#### If error "Permission denied":
+```
+chmod +x build.sh run.sh test.sh
+```
+### 2nd Step:
+```
+./run.sh
+```
+or 
+```
+./test.sh
+```
+## Windows:
+### 1st Step:
+```bat
+build.bat
+```
+### 2nd Step:
+```
+run.bat
+```
+or
+```
+test.bat
+```
+
