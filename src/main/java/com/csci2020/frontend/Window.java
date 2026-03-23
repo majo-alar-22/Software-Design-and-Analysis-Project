@@ -51,9 +51,7 @@ public class Window extends JFrame {
         repaint();
     }
 
-    public void showLoggedInPane(){
-        this.setContentPane(new LoggedInPanel(db));
-    }
+    public void showLoggedInPane(){this.setContentPane(new LoggedInPanel(db));}
 
     public void showRegisterPane(){
         RegisterPanel panel = new RegisterPanel();
@@ -125,13 +123,4 @@ public class Window extends JFrame {
         this.repaint();
     }
 
-    public void showGameSchedulingPanel() {
-        // creates a default spinner with the current date and time
-        JSpinner spinner = new JSpinner(new SpinnerDateModel());
-        GameSchedulingView panel = new GameSchedulingView(null, null, db, spinner);
-
-        this.setContentPane(panel);
-        this.revalidate();
-        this.repaint();
-    }
 }
