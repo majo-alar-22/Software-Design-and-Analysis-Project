@@ -42,9 +42,9 @@ public class GameSchedulingView extends JPanel {
         this.db = db;
         //      this.rosterView = new TeamRosterView(team);
         this.team1Label = new JLabel("Team 1:");
-        this.team1Field = new JTextField();
+        this.team1Field = new JTextField(15);
         this.team2Label = new JLabel("Team 2:");
-        this.team2Field = new JTextField();
+        this.team2Field = new JTextField(15);
         this.dateLabel = new JLabel("Date:");
         this.dateSpinner = dateSpinner;
         this.dateEditor = new JSpinner.DateEditor(dateSpinner, "dd/MM/yyyy HH:mm");
@@ -67,50 +67,39 @@ public class GameSchedulingView extends JPanel {
 
     // Function called in register action listener, confirms the date for the game
     private void registerGame() {
-        String teamOneName = team1Field.getText();
-        String teamTwoName = team2Field.getText();
+        String teamOneName = team1Field.getText().trim();
+        String teamTwoName = team2Field.getText().trim();
 
-        // Checks if either of the name fields are empty and gives an error message if so
         if (teamOneName.isEmpty() || teamTwoName.isEmpty()) {
             JOptionPane.showMessageDialog(null, "You are missing one or both teams");
             return;
         }
 
-        // EntityManagerFactory to retrieve data from the database
-        EntityManagerFactory emf = Persistence.createEntityManagerFactory("csci2020.backend");
-        EntityManager em = emf.createEntityManager();
+        if (teamOneName.equalsIgnoreCase(teamTwoName)) {
+            JOptionPane.showMessageDialog(null, "A team cannot play against itself");
+            return;
+        }
 
-        Team teamOne;
-        Team teamTwo;
+        Team teamOne = db.getTeamByName(teamOneName);
+        Team teamTwo = db.getTeamByName(teamTwoName);
 
-        try {
-
-            // Creates query to search for the given team in the text field and assign it to team one
-            teamOne = em.createQuery(
-                    "SELECT t FROM Team t WHERE t.name = :name", Team.class
-            ).setParameter("name", teamOneName).getSingleResult();
-
-            // Creates query to search for the given team in the text field and assign it to team two
-            teamTwo = em.createQuery(
-                    "SELECT t FROM t WHERE t.name = :name", Team.class
-            ).setParameter("name", teamTwoName).getSingleResult();
-        }catch (NoResultException e) {
+        if (teamOne == null || teamTwo == null) {
             JOptionPane.showMessageDialog(null, "Team(s) not found");
             return;
         }
 
         Date date = (Date) dateSpinner.getValue();
-
         LocalDateTime dateTime = date.toInstant()
                 .atZone(ZoneId.systemDefault())
                 .toLocalDateTime();
 
-        Scheduling scheduling = new Scheduling(teamOne, teamTwo, dateTime);
+        System.out.println("Saving: " + teamOne.getName() + " vs " + teamTwo.getName() + " at " + dateTime);
 
-        em.getTransaction().begin();
-        em.persist(scheduling);
-        em.getTransaction().commit();
+        db.saveMatch(teamOne, teamTwo, dateTime);
 
         JOptionPane.showMessageDialog(null, "Game registered successfully!");
+
+        team1Field.setText("");
+        team2Field.setText("");
     }
 }
