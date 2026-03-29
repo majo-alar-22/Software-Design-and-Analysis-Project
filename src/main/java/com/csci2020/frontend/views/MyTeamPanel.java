@@ -133,6 +133,8 @@ public class MyTeamPanel extends JPanel {
             gbc.gridy++;
             rightColumn.add(buildGameOutcomePanel(), gbc);
         }
+        gbc.gridy++;
+        rightColumn.add(buildAddPlayerToTeamPanel(),gbc);
 
         return rightColumn;
     }
@@ -237,6 +239,31 @@ public class MyTeamPanel extends JPanel {
             }
         });
 
+        return panel;
+    }
+    private JPanel buildAddPlayerToTeamPanel(){
+        JPanel panel = new JPanel();
+        panel.setLayout(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        Player[] freePlayers = db.getAllPlayers().stream().filter((p)->{
+            Team team = p.getTeam();
+            System.out.println(team);
+            return p.getTeam() == null;
+        }).toArray(Player[]::new);
+        JComboBox<Player> playerSelector = new JComboBox<>(freePlayers);
+
+        JButton addPlayerButton = new JButton("Add Player");
+
+        addPlayerButton.addActionListener((event)->{
+            this.team.addPlayerToRoster((Player)playerSelector.getSelectedItem());
+        });
+
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.fill = GridBagConstraints.BOTH;
+        panel.add(playerSelector, gbc);
+        gbc.gridy++;
+        panel.add(addPlayerButton, gbc);
         return panel;
     }
 }

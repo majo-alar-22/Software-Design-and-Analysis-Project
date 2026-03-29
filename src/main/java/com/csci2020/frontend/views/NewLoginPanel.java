@@ -49,7 +49,7 @@ public class NewLoginPanel extends JPanel {
         setLayout(new GridBagLayout());
 
         cardPanel.setLayout(new BorderLayout(0, 18));
-        cardPanel.setPreferredSize(new Dimension(460, 360));
+        cardPanel.setPreferredSize(new Dimension(460, 400));
         cardPanel.setBorder(new EmptyBorder(28, 30, 24, 30));
 
         title.setHorizontalAlignment(SwingConstants.CENTER);
@@ -67,19 +67,28 @@ public class NewLoginPanel extends JPanel {
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.weightx = 1.0;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.fill = GridBagConstraints.BOTH;
         gbc.insets = new Insets(0, 0, 12, 0);
 
         formPanel.add(usernameField, gbc);
         gbc.gridy++;
         formPanel.add(passwordField, gbc);
         gbc.gridy++;
-
+        gbc.weighty = 0;
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.anchor = GridBagConstraints.CENTER;
+//        gbc.weighty = 1.0;
         loginButton.setPreferredSize(new Dimension(140, 40));
-        JPanel buttonRow = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+        JPanel buttonRow = new JPanel(new FlowLayout(FlowLayout.CENTER));
         buttonRow.setOpaque(false);
         buttonRow.add(loginButton);
+        gbc.weighty = 1.0;
+        formPanel.add(Box.createVerticalBox());
+        gbc.weighty = 0.0;
         formPanel.add(buttonRow, gbc);
+        gbc.weighty = 1.0;
+        formPanel.add(Box.createVerticalBox());
+        gbc.weighty = 0.0;
 
         gbc.gridy++;
         gbc.insets = new Insets(4, 0, 0, 0);
