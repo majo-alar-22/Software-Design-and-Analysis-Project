@@ -42,9 +42,9 @@ public class GameSchedulingView extends JPanel {
         this.db = db;
         //      this.rosterView = new TeamRosterView(team);
         this.team1Label = new JLabel("Team 1:");
-        this.team1Field = new JTextField();
+        this.team1Field = new JTextField(10);
         this.team2Label = new JLabel("Team 2:");
-        this.team2Field = new JTextField();
+        this.team2Field = new JTextField(10);
         this.dateLabel = new JLabel("Date:");
         this.dateSpinner = dateSpinner;
         this.dateEditor = new JSpinner.DateEditor(dateSpinner, "dd/MM/yyyy HH:mm");
