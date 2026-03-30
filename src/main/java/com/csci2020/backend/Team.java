@@ -85,14 +85,14 @@ public class Team {
         return true;
     }
 
-    public void recordMatch(int goalsScored, int goalsAllowed) {
+    public void recordMatch(int goalsScored, int goalsAgainst) {
         this.goalsFor += goalsScored;
-        this.goalsAgainst += goalsAllowed;
+        this.goalsAgainst += goalsAgainst;
 
-        if (goalsScored > goalsAllowed) {
+        if (goalsScored > goalsAgainst) {
             this.wins++;
             this.points += 3;
-        } else if (goalsScored == goalsAllowed) {
+        } else if (goalsScored == goalsAgainst) {
             this.draws++;
             this.points += 1;
         } else {

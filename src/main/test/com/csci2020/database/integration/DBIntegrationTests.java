@@ -1,4 +1,4 @@
-package com.csci2020.database;
+package com.csci2020.database.integration;
 
 import com.csci2020.backend.*;
 import org.junit.jupiter.api.*;
@@ -8,7 +8,7 @@ import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class DBTest {
+public class DBIntegrationTests {
     public Database db;
     public static final Path dbPath = Path.of(".","test");
 
