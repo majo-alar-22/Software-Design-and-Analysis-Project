@@ -9,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class TeamTest {
     @Test
-    public void testCreation(){
+    public void testTeamCreation(){
         Team team = new Team("Test Team");
         assertEquals("Test Team", team.getName());
         assertEquals(0, team.getRoster().size());
