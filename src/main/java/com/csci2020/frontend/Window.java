@@ -51,9 +51,7 @@ public class Window extends JFrame {
         repaint();
     }
 
-    public void showLoggedInPane(){
-        this.setContentPane(new LoggedInPanel(db));
-    }
+    public void showLoggedInPane(){this.setContentPane(new LoggedInPanel(db));}
 
     public void showRegisterPane(){
         RegisterPanel panel = new RegisterPanel();
@@ -124,4 +122,5 @@ public class Window extends JFrame {
         this.revalidate();
         this.repaint();
     }
+
 }

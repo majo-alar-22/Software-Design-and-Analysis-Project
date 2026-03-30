@@ -1,17 +1,20 @@
 package com.csci2020.backend;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.NoResultException;
+import jakarta.persistence.Persistence;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 
+import javax.swing.*;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Properties;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.*;
 import java.util.logging.*;
 import java.util.regex.Pattern;
 
@@ -503,11 +506,48 @@ public class Database {
     public List<Scheduling> getAllMatches(){
         logger.log(Level.FINE, "Retrieving all matches");
         try(Session session = getFactory().openSession()) {
-            return session.createQuery("FROM matches", Scheduling.class)
+            return session.createQuery("FROM Scheduling", Scheduling.class)
                     .getResultList();
         } catch(Exception e){
             logger.log(Level.SEVERE, QUERY_ERROR_MESSAGE + e.getMessage(), e);
             return new ArrayList<>();
         }
+    }
+
+    public AuthenticationResult registerGame(String teamOneName, String teamTwoName, Date date) {
+        // Checks if either of the name fields are empty and gives an error message if so
+        if (teamOneName.isEmpty() || teamTwoName.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "You are missing one or both teams");
+            return new AuthenticationResult(AuthenticationResult.AUTHENTICATION_STATUS.ERROR, "You are missing one or both teams");
+        }
+        Team teamOne;
+        Team teamTwo;
+
+        try {
+            // Creates query to search for the given team in the text field and assign it to team one
+            teamOne = getTeamByName(teamOneName);
+
+            // Creates query to search for the given team in the text field and assign it to team two
+            teamTwo = getTeamByName(teamTwoName);
+        }catch (NoResultException e) {
+            JOptionPane.showMessageDialog(null, "Team(s) not found");
+            return new AuthenticationResult(AuthenticationResult.AUTHENTICATION_STATUS.ERROR, "Team(s) not found");
+        }
+
+        LocalDateTime dateTime = date.toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDateTime();
+
+        Scheduling scheduling = new Scheduling(teamOne, teamTwo, dateTime);
+        Transaction transaction = null;
+        try(Session session = getFactory().openSession()){
+            transaction = session.beginTransaction();
+            session.persist(scheduling);
+            transaction.commit();
+        } catch(Exception e){
+            logger.log(Level.SEVERE, QUERY_ERROR_MESSAGE + e.getMessage(), e);
+            return new AuthenticationResult(AuthenticationResult.AUTHENTICATION_STATUS.ERROR, e.getMessage());
+        }
+        return new AuthenticationResult(AuthenticationResult.AUTHENTICATION_STATUS.ERROR, "You are missing one or both teams");
     }
 }

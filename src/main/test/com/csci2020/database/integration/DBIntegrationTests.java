@@ -5,6 +5,9 @@ import org.junit.jupiter.api.*;
 
 import java.io.File;
 import java.nio.file.Path;
+import java.time.Instant;
+import java.util.Date;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -99,5 +102,20 @@ public class DBIntegrationTests {
     public void testDuplicateUsername(){
         assertEquals(AuthenticationResult.AUTHENTICATION_STATUS.SUCCESS, db.createNewAccount("username", "FirstName", "LastName", "password".toCharArray()).status());
         assertEquals(AuthenticationResult.AUTHENTICATION_STATUS.INVALID_CREDENTIALS, db.createNewAccount("username", "FirstName", "LastName", "password".toCharArray()).status());
+    }
+
+    @Test
+    public void testCreateMatch(){
+        assertEquals(0,db.getAllMatches().size());
+
+        db.createTeam("Team One", null);
+        db.createTeam("Team Two", null);
+
+        Date d = Date.from(Instant.now().minusSeconds(60*60*24*3));
+
+        db.registerGame("Team One", "Team Two", d);
+
+        assertEquals(1,db.getAllMatches().size());
+
     }
 }
