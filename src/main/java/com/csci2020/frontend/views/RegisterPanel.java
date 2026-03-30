@@ -150,8 +150,59 @@ public class RegisterPanel extends JPanel {
     }
 
     private void onRegisterPressed() {
+        // TODO replace authentication_status with a more general error type, since the current
+        //  implementation implies that it involves authentication when it doesn't.
         String username = usernameField.getText().trim();
+        if(username.length() <= 3){
+            setMessage("Username must be at least 3 characters", AuthenticationResult.AUTHENTICATION_STATUS.ERROR);
+            return;
+        }
+        if(!username.replaceAll("[^0-9a-zA-Z]", "").equalsIgnoreCase(username)){
+            setMessage("Username must be only alphanumeric", AuthenticationResult.AUTHENTICATION_STATUS.ERROR);
+            return;
+        }
         char[] password = passwordField.getPassword();
+        if(password.length <= 5){
+            setMessage("Password must be at least 5 characters", AuthenticationResult.AUTHENTICATION_STATUS.ERROR);
+            return;
+        }
+        boolean passwordHasNumber = false, passwordHasLowercase = false, passwordHasUppercase = false, passwordHasSpecial = false;
+        for(int i = 0; i < password.length; i++) {
+            char c = password[i];
+            if (Character.isLowerCase(c)) {
+                passwordHasLowercase = true;
+            } else if (Character.isUpperCase(c)) {
+                passwordHasUppercase = true;
+            } else if (Character.isDigit(c)) {
+                passwordHasNumber = true;
+            } else if (!passwordHasSpecial && isSpecialCharacter(c)) {
+                passwordHasSpecial = true;
+            }
+            if (passwordHasNumber && !passwordHasLowercase && passwordHasUppercase && passwordHasSpecial){
+                //skip unnecessary computations
+                break;
+            }
+        }
+
+        if(!passwordHasNumber){
+            setMessage("Password must contain at least 1 number!", AuthenticationResult.AUTHENTICATION_STATUS.ERROR);
+            return;
+        }
+        if(!passwordHasLowercase){
+            setMessage("Password must contain a lowercase letter!", AuthenticationResult.AUTHENTICATION_STATUS.ERROR);
+            return;
+        }
+        if(!passwordHasUppercase){
+            setMessage("Password must contain an uppercase letter!", AuthenticationResult.AUTHENTICATION_STATUS.ERROR);
+            return;
+        }
+        if(!passwordHasSpecial){
+            setMessage("Password must contain a special character!<br>" +
+                    "Special characters include: !@#$%^&*()_+-=[];:'\"~`",
+                    AuthenticationResult.AUTHENTICATION_STATUS.ERROR);
+            return;
+        }
+
         char[] confirmPassword = passwordConfirmField.getPassword();
 
         if (!Arrays.equals(password, confirmPassword)) {
@@ -217,5 +268,15 @@ public class RegisterPanel extends JPanel {
         if (" ".equals(message.getText())) {
             message.setForeground(theme.getForegroundSecondary());
         }
+    }
+
+    public boolean isSpecialCharacter(Character c) {
+        char[] specialCharacters = {'!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '_', '+', '-', '=', '[', ']', ';', ':', '\'', '"', '~', '`'};
+        for (char specialCharacter : specialCharacters) {
+            if (c == specialCharacter) {
+                return true;
+            }
+        }
+        return false;
     }
 }
