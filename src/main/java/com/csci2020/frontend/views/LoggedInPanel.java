@@ -3,6 +3,7 @@ package com.csci2020.frontend.views;
 import com.csci2020.backend.Database;
 import com.csci2020.frontend.GameSchedulingView;
 import com.csci2020.frontend.TeamStandingsView;
+import com.csci2020.frontend.Tournament;
 import com.csci2020.frontend.UpcomingGamesView;
 
 import javax.swing.*;
@@ -35,6 +36,7 @@ public class LoggedInPanel extends JPanel {
             }
         });
 
+        tabbedPane.addTab("Tournament", new Tournament());
         this.add(tabbedPane);
     }
 }
