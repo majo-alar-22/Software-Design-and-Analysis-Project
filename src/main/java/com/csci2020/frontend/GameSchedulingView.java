@@ -2,14 +2,9 @@ package com.csci2020.frontend;
 
 import com.csci2020.backend.Database;
 import com.csci2020.backend.Team;
-import com.csci2020.backend.Scheduling;
 import jakarta.persistence.*;
 import javax.swing.*;
 import javax.swing.table.TableModel;
-import javax.swing.text.MaskFormatter;
-import java.time.LocalDateTime;
-import java.sql.Timestamp;
-import java.time.ZoneId;
 import java.util.Date;
 
 public class GameSchedulingView extends JPanel {

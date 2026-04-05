@@ -6,7 +6,6 @@ import com.csci2020.backend.Scheduling;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
@@ -33,6 +32,7 @@ public class UpcomingGamesView extends JPanel {
 
         gamesTable = new JTable(tableModel);
         gamesTable.setRowHeight(24);
+
         add(new JScrollPane(gamesTable), BorderLayout.CENTER);
 
         loadUpcomingGames();

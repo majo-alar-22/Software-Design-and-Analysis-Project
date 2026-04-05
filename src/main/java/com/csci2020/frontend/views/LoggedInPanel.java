@@ -1,10 +1,9 @@
 package com.csci2020.frontend.views;
 
 import com.csci2020.backend.Database;
-import com.csci2020.frontend.GameSchedulingView;
-import com.csci2020.frontend.TeamStandingsView;
-import com.csci2020.frontend.Tournament;
-import com.csci2020.frontend.UpcomingGamesView;
+import com.csci2020.backend.Team;
+import com.csci2020.backend.TeamGameHistory;
+import com.csci2020.frontend.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -23,6 +22,17 @@ public class LoggedInPanel extends JPanel {
         this.tabbedPane.addTab("Players", new AllPlayersPanel(db));
         this.tabbedPane.addTab("Teams", new AllTeamsPanel(db));
         this.tabbedPane.addTab("My Team", new MyTeamPanel(db));
+
+        // Handles team game history and adds the tabbed pane to the menu
+        Team team = null;
+        if (db.getCurrentUser() != null && db.getCurrentUser().getPlayer() != null) {
+            team = db.getCurrentUser().getPlayer().getTeam();
+        }
+        TeamGameHistory historyPanel = new TeamGameHistory(db);
+        historyPanel.addGameHistory(team);
+        this.tabbedPane.addTab("Team History", new TeamGameHistoryView(db, team));
+
+
         // this.tabbedPane.addTab("Matches", new JLabel("Not implemented yet"));
         JSpinner spinner = new JSpinner(new SpinnerDateModel());
         this.tabbedPane.addTab("Schedule Match", new GameSchedulingView(null,null,db,spinner));

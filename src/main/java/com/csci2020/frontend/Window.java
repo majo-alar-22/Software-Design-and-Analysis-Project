@@ -123,4 +123,12 @@ public class Window extends JFrame {
         this.repaint();
     }
 
+    public void showTeamGameHistory() {
+        Player player =  db.getCurrentUser().getPlayer();
+        Team team = player.getTeam();
+        this.setContentPane(new TeamGameHistoryView(db, team));
+        this.revalidate();
+        this.repaint();
+    }
+
 }
