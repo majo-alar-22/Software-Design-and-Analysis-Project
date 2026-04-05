@@ -39,18 +39,14 @@ public class TeamGameHistory extends JPanel {
 
                 LocalDateTime dt = match.getDateTime();
 
-                tableModel.addRow(new Object[]{
-                        opponent.getName(),
-                        dt.toLocalDate(),
-                        dt.toLocalTime()
-                });
-
-                // }
+                if (dt.isBefore(LocalDateTime.now())) {
+                    tableModel.addRow(new Object[]{
+                            opponent.getName(),
+                            dt.toLocalDate(),
+                            dt.toLocalTime()
+                    });
+                }
             }
         }
-    }
-    // Getter
-    public JTable getHistoryTable() {
-        return historyTable;
     }
 }
