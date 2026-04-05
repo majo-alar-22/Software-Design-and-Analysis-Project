@@ -1,6 +1,7 @@
 package com.csci2020.frontend.views;
 
 import com.csci2020.backend.Database;
+import com.csci2020.backend.Scheduling;
 import com.csci2020.backend.Team;
 import com.csci2020.frontend.UpcomingGamesView;
 
@@ -25,7 +26,8 @@ public class TeamGameHistory extends JPanel {
     }
 
     // Function to check if a game has already happened, and add it to the table
-    public void addGameHistory(){
+    public void addGameHistory(Database db){
+        List matches = (List) db.getAllMatches();
 
     }
     // Getter
