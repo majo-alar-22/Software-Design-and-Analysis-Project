@@ -11,25 +11,13 @@ import com.csci2020.backend.TeamGameHistory;
 public class TeamGameHistoryView extends JPanel {
     private final Database db;
     private final JTabbedPane tabbedPane = new  JTabbedPane();
-    private final JTable table;
-    private final DefaultTableModel tableModel;
-
 
     public TeamGameHistoryView(Database db, Team team) {
+        System.out.println("TeamGameHistoryView() created");
         this.db = db;
-        JPanel panel = new JPanel(new BorderLayout());
-        JLabel title = new JLabel("Team Game History");
-        panel.add(title, BorderLayout.NORTH);
-        tableModel = new DefaultTableModel(new String[]{"Opponent", "Date and Time"}, 0) {
-            @Override
-            public boolean isCellEditable(int row, int column) {return false;}
-        };
-        table = new JTable(tableModel);
-        table.setRowHeight(24);
-        JScrollPane scrollPane = new JScrollPane(table);
-        panel.add(scrollPane, BorderLayout.CENTER);
-        tabbedPane.addTab("Team Game History",scrollPane);
         this.setLayout(new BorderLayout());
-        this.add(tabbedPane,BorderLayout.CENTER);
+        TeamGameHistory historyPanel = new TeamGameHistory(db);
+        historyPanel.addGameHistory(team);
+        this.add(historyPanel, BorderLayout.CENTER);
     }
 }
