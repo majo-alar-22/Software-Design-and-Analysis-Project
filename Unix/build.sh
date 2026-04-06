@@ -1,2 +1,2 @@
 #!/bin/bash
-mvn -f script.xml clean compile
+mvn -f pom.xml clean compile

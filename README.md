@@ -1,17 +1,31 @@
 # Soccer Manager
-TODO
+A sports league registration and management system, supporting accounts, players, captains, and administrators.
 
 # Features
 
-TODO
+- Account management
+- Sign up for accounts
+- Create and join teams
+- Kick players from your team
+- Schedule matches with other teams
 
 # Installation
 
-TODO
+## Option A: Maven
+> [!IMPORTANT]  
+> Make sure Maven is installed and available on your path. This should be available from within your package manager.
 
-# Usage
+#### Step 1
 
-TODO
+`mvn package`
+
+#### Step 2
+
+Copy `target/ProjectTest-1.0-SNAPSHOT.jar` to a directory of your choosing
+
+#### Step 3
+
+Run `java -jar ProjectTest-1.0-SNAPSHOT.jar` in that directory.
 
 # Setup Instructions for Users
 * 1: When opening the app you will arrive at the login screen. If you already have an account, fill in your credentials in the fields provided and press 'Login' to continue. If you do not have an account, begin at the second step of instructions.
@@ -34,25 +48,26 @@ TODO
 </p>
 
 # Instructions on how to test/run program:
-- Have maven and Java 25 installed
+> [!IMPORTANT]  
+> Make sure Maven and Java is installed and available on your path. This should be available in your distributions package manager or winget.
 
 ## Unix:
 ### 1st Step:
 ```bash
-./build.sh
+./Unix/build.sh
 ```
 
 #### If error "Permission denied":
 ```
-chmod +x build.sh run.sh test.sh
+chmod +x ./Unix/*.sh
 ```
 ### 2nd Step:
 ```
-./run.sh
+./Unix/run.sh
 ```
 or 
 ```
-./test.sh
+./Unix/test.sh
 ```
 ## Windows:
 ### 1st Step:
