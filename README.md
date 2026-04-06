@@ -1,13 +1,15 @@
 # Soccer Manager
-A sports league registration and management system, supporting accounts, players, captains, and administrators.
+A sports league registration and management system, supporting accounts of three different types: players, captains, and administrators. Admin users can login or create a new account when they run the app and once logged in, can create their own teams with a name of their choosing, and can then add teamless players to their teams through the roster management menu, where a user can also see their roster and input the final score of matches against other teams. Admins can then schedule matches with other teams in the 'Schedule Match' tab with their desired date and time. All users can view their upcoming matches and their game history in the 'Upcoming Matches' and 'Game History' tabs respectively. Any user can view their own team in the 'My Team' tab and all teams currently registered by navigating to the 'Teams' tab. 
 
 # Features
 
 - Account management
-- Sign up for accounts
-- Create and join teams
-- Kick players from your team
-- Schedule matches with other teams
+- Signing up for accounts
+- Creation and joining of teams
+- Kicking players from your team
+- Scheduling matches with other teams
+- Match History Menu
+- Tournament Mode
 
 # Installation
 
