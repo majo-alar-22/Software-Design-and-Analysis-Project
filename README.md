@@ -49,6 +49,12 @@ Run `java -jar ProjectTest-1.0-SNAPSHOT.jar` in that directory.
   <img src = "images/MyTeam-Page.png" alt = "My Team Creation page" width = "850" height = "850">
 </p>
 
+* 4: You can find the added players on the 'Player' tab.
+
+<p align="center">
+  <img src = "images/Players-Page.png" alt = "My Team Creation page" width = "850" height = "850">
+</p>
+
 # Instructions on how to test/run program:
 > [!IMPORTANT]  
 > Make sure Maven and Java is installed and available on your path. This should be available in your distributions package manager or winget.
