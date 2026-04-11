@@ -8,6 +8,7 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.time.LocalDateTime;
 
 public class UpcomingGamesView extends JPanel {
     private final Database db;
@@ -43,26 +44,30 @@ public class UpcomingGamesView extends JPanel {
 
         List<Scheduling> games = db.getAllMatches();
 
+        LocalDateTime now = LocalDateTime.now();
+
         System.out.println("Total matches from DB: " + games.size());
 
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
 
         for (Scheduling game : games) {
-            System.out.println("Match from DB: "
-                    + game.getTeamOne().getName() + " vs "
-                    + game.getTeamTwo().getName() + " at "
-                    + game.getDateTime());
+            if (game.getDateTime().isAfter(now)) {
+                System.out.println("Match from DB: "
+                        + game.getTeamOne().getName() + " vs "
+                        + game.getTeamTwo().getName() + " at "
+                        + game.getDateTime());
 
-            String teamOneName = game.getTeamOne() == null ? "Unknown" : game.getTeamOne().getName();
-            String teamTwoName = game.getTeamTwo() == null ? "Unknown" : game.getTeamTwo().getName();
+                String teamOneName = game.getTeamOne() == null ? "Unknown" : game.getTeamOne().getName();
+                String teamTwoName = game.getTeamTwo() == null ? "Unknown" : game.getTeamTwo().getName();
 
-            tableModel.addRow(new Object[]{
-                    teamOneName,
-                    teamTwoName,
-                    game.getDateTime().format(dateFormatter),
-                    game.getDateTime().format(timeFormatter)
-            });
+                tableModel.addRow(new Object[]{
+                        teamOneName,
+                        teamTwoName,
+                        game.getDateTime().format(dateFormatter),
+                        game.getDateTime().format(timeFormatter)
+                });
+            }
         }
     }
 
