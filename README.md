@@ -55,17 +55,17 @@ Run `java -jar ProjectTest-1.0-SNAPSHOT.jar` in that directory.
   <img src = "images/Players-Page.png" alt = "My Team Creation page" width = "850" height = "850">
 </p>
 
-* 4: Next to the 'Players' tab, you can find the teams that have been added, with their individual team stats, and their team captain.
+* 5: Next to the 'Players' tab, you can find the teams that have been added, with their individual team stats, and their team captain.
 
-* 5: In the 'My Team' tab you can see the team you are part of, as well as the rest of your teammates. Inside this tab you can add the outcomes of past matches you have had. If admin, you will see the option to add a new player to the team.
+* 6: In the 'My Team' tab you can see the team you are part of, as well as the rest of your teammates. Inside this tab you can add the outcomes of past matches you have had. If admin, you will see the option to add a new player to the team.
 
-* 6: In the 'Team History' tab you will be able to see the past matches your team has played.
+* 7: In the 'Team History' tab you will be able to see the past matches your team has played.
 
-* 7: To schedule a match, you can go to the 'Schedule Match' tab, in here you will have to add both teams names, and pick a date when the game will be played.
+* 8: To schedule a match, you can go to the 'Schedule Match' tab, in here you will have to add both teams names, and pick a date when the game will be played.
 
-* 8: After scheduling a match, you can go to the 'Upcoming Games' tab, where you will be able to see the day and time the match will be played by.
+* 9: After scheduling a match, you can go to the 'Upcoming Games' tab, where you will be able to see the day and time the match will be played by.
 
-* 9: Finally the 'Tournament' tab shows how a simulation of a tournament would look like. This works by registering games and outcomes as you normally would. But you do require help from an admin in order to create a torunament.
+* 10: Finally the 'Tournament' tab shows how a simulation of a tournament would look like. This works by registering games and outcomes as you normally would. But you do require help from an admin in order to create a torunament.
 
 # Instructions on how to test/run program:
 > [!IMPORTANT]  
