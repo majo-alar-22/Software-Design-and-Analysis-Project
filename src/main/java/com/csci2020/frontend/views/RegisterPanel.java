@@ -182,7 +182,7 @@ public class RegisterPanel extends JPanel {
             setMessage("Username must be at least 3 characters", AuthenticationResult.AUTHENTICATION_STATUS.ERROR);
             return false;
         }
-        if(!username.replaceAll("[^0-9a-zA-Z]", "").equalsIgnoreCase(username)){
+        if(!username.replaceAll("[^0-9a-zA-Z._]", "").equalsIgnoreCase(username)){
             setMessage("Username must be only alphanumeric", AuthenticationResult.AUTHENTICATION_STATUS.ERROR);
             return false;
         }
