@@ -46,7 +46,7 @@ Run `java -jar ProjectTest-1.0-SNAPSHOT.jar` in that directory.
 * 3: After logging in you will arrive at the main menu. You can navigate through each section of the app using the tabs located at the top right of the page. Navigate to the 'My Team" tab. Here you can create your team or request to be added to an existing team. Fill in the field and press 'Create a Team' to create your team.
 
 <p align="center">
-  <img src = "images/MyTeam-Page.png" alt = "My Team Creation page" width = "850" height = "850">
+  <img src = "images/Empty_MyTeam.png" alt = "My Team Creation page" width = "850" height = "850">
 </p>
 
 * 4: You can find the added players on the 'Player' tab.
@@ -57,15 +57,37 @@ Run `java -jar ProjectTest-1.0-SNAPSHOT.jar` in that directory.
 
 * 5: Next to the 'Players' tab, you can find the teams that have been added, with their individual team stats, and their team captain.
 
+<p align="center">
+  <img src = "images/Teams_Postgame.png" alt = "My Team Creation page" width = "850" height = "850">
+</p>
+
 * 6: In the 'My Team' tab you can see the team you are part of, as well as the rest of your teammates. Inside this tab you can add the outcomes of past matches you have had. If admin, you will see the option to add a new player to the team.
+
+<p align="center">
+  <img src = "images/MyTeam.png" alt = "My Team Creation page" width = "850" height = "850">
+</p>
 
 * 7: In the 'Team History' tab you will be able to see the past matches your team has played.
 
+
+
 * 8: To schedule a match, you can go to the 'Schedule Match' tab, in here you will have to add both teams names, and pick a date when the game will be played.
+
+<p align="center">
+  <img src = "images/Schedule.png" alt = "My Team Creation page" width = "850" height = "850">
+</p>
 
 * 9: After scheduling a match, you can go to the 'Upcoming Games' tab, where you will be able to see the day and time the match will be played by.
 
+<p align="center">
+  <img src = "images/Upcoming.png" alt = "My Team Creation page" width = "850" height = "850">
+</p>
+
 * 10: Finally the 'Tournament' tab shows how a simulation of a tournament would look like. This works by registering games and outcomes as you normally would. But you do require help from an admin in order to create a torunament.
+
+<p align="center">
+  <img src = "images/Tournament.png" alt = "My Team Creation page" width = "850" height = "850">
+</p>
 
 # Instructions on how to test/run program:
 > [!IMPORTANT]  
