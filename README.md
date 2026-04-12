@@ -69,7 +69,9 @@ Run `java -jar ProjectTest-1.0-SNAPSHOT.jar` in that directory.
 
 * 7: In the 'Team History' tab you will be able to see the past matches your team has played.
 
-
+<p align="center">
+  <img src = "images/MatchHistory.png" alt = "My Team Creation page" width = "850" height = "850">
+</p>
 
 * 8: To schedule a match, you can go to the 'Schedule Match' tab, in here you will have to add both teams names, and pick a date when the game will be played.
 
