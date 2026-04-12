@@ -95,7 +95,7 @@ public class RegisterPanel extends JPanel {
         gbc.insets = new Insets(4, 0, 0, 0);
         message.setHorizontalAlignment(SwingConstants.CENTER);
         message.setFont(new Font("SansSerif", Font.PLAIN, 13));
-        message.setPreferredSize(new Dimension(320, 20));
+        message.setPreferredSize(new Dimension(320, 40));
         formPanel.add(message, gbc);
 
         footerPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 8, 0));
@@ -286,8 +286,8 @@ public class RegisterPanel extends JPanel {
             return false;
         }
         if(!passwordHasSpecial){
-            setMessage("Password must contain a special character!<br>" +
-                            "Special characters include: !@#$%^&*()_+-=[];:'\"~`",
+            setMessage("<html>Password must contain a special character!<br>" +
+                            "Special characters include: !@#$%^&*()_+-=[];:'\"~`</html>",
                     AuthenticationResult.AUTHENTICATION_STATUS.ERROR);
             return false;
         }
